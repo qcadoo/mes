@@ -56,11 +56,7 @@ public class SupplyParametersHooksOS {
 
         CheckBoxComponent considerMinimumStockLevelWhenCreatingProductionOrders = (CheckBoxComponent) view
                 .getComponentByReference(L_CONSIDER_MINIMUM_STOCK_LEVEL_WHEN_CREATING_PRODUCTION_ORDERS);
-        if(parameterService.getParameter().getBooleanField(L_REALIZATION_FROM_STOCK)) {
-            considerMinimumStockLevelWhenCreatingProductionOrders.setEnabled(true);
-        } else {
-            considerMinimumStockLevelWhenCreatingProductionOrders.setEnabled(false);
-        }
+        considerMinimumStockLevelWhenCreatingProductionOrders.setEnabled(parameterService.getParameter().getBooleanField(L_REALIZATION_FROM_STOCK));
 
     }
 }

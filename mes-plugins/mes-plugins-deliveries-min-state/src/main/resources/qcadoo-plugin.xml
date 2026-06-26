@@ -27,21 +27,15 @@
 <plugin plugin="deliveriesMinState" group="deliveries" version="${qcadoo.plugin.version}"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
         xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
-        xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
-        xmlns:custom="http://schema.qcadoo.org/modules/custom"
-        xsi:schemaLocation="
-       http://schema.qcadoo.org/plugin
+        xmlns:localization="http://schema.qcadoo.org/modules/localization"
+        xsi:schemaLocation="http://schema.qcadoo.org/plugin
        http://schema.qcadoo.org/plugin.xsd
        http://schema.qcadoo.org/modules/model
        http://schema.qcadoo.org/modules/model.xsd
        http://schema.qcadoo.org/modules/view
        http://schema.qcadoo.org/modules/view.xsd
        http://schema.qcadoo.org/modules/localization
-       http://schema.qcadoo.org/modules/localization.xsd
-       http://schema.qcadoo.org/modules/menu
-       http://schema.qcadoo.org/modules/menu.xsd
-       http://schema.qcadoo.org/modules/custom
-       http://schema.qcadoo.org/modules/custom.xsd">
+       http://schema.qcadoo.org/modules/localization.xsd">
 
     <information>
         <name>MES - Deliveries Min State</name>
@@ -57,7 +51,6 @@
 
     <dependencies>
 
-        <!-- zaleznosc od werhause minimal states; dostaw; -->
         <dependency>
             <plugin>deliveries</plugin>
             <version>[1.4.0</version>
@@ -80,12 +73,17 @@
         <localization:translation path="locales"/>
 
         <view:view-ribbon-group resource="view/ribbonExtensions/deliveriesList.xml" />
+        <view:view-ribbon-group resource="view/ribbonExtensions/supplyParameters.xml" />
 
         <view:view-listener plugin="deliveries" view="deliveriesList"
             component="grid" event="triggerDeliveriesMinState"
             class="com.qcadoo.mes.deliveriesMinState.DeliveriesMinStateService" method="triggerDeliveriesMinState" />
 
-        <view:view-tab resource="view/tabExtensions/supplyParametersForDeliveries.xml"/>
+        <view:view-listener plugin="deliveries" view="supplyParameters"
+            component="form" event="redirectToSupplyParametersForDeliveries"
+            class="com.qcadoo.mes.deliveriesMinState.listeners.ParametersListenersDMS" method="redirectToSupplyParametersForDeliveries" />
+
+        <view:view resource="view/supplyParametersForDeliveries.xml"/>
         <view:view-tab resource="view/tabExtensions/parameterStaffNotificationsDetails.xml"/>
 
         <model:model-field plugin="basic" model="parameter">

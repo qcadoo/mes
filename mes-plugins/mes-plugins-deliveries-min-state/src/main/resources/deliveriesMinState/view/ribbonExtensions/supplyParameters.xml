@@ -24,20 +24,24 @@
     ***************************************************************************
 
 -->
-<windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                    xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
-                    xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
-                    plugin="deliveries" view="supplyParameters">
+<ribbonExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/ribbonExtension"
+    xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd"
+    plugin="deliveries"
+    view="supplyParameters">
 
-    <windowTab name="deliveriesMinStateTab" reference="deliveriesMinStateTab">
-        <component type="gridLayout" name="deliveriesMinStateParametersGridLayout"
-                   columns="1" rows="1">
-            <layoutElement column="1" row="1">
-                <component type="checkbox" name="automaticDeliveriesMinState" hasDescription="true"
-                           field="#{form}.automaticDeliveriesMinState" reference="automaticDeliveriesMinState"/>
-            </layoutElement>
-
-        </component>
-    </windowTab>
-
-</windowTabExtension>
+	<group name="parameters" defaultAuthorizationRole="ROLE_PARAMETERS">
+		<bigButton name="supplyParametersForDeliveries" icon="generateIcon24.png">
+			<script>
+				<![CDATA[
+					this.addOnChangeListener({
+						onClick: function() {
+							if(window.canClose()) {
+								#{form}.performEvent('redirectToSupplyParametersForDeliveries', []);
+							}
+						}
+					});
+				]]>
+			</script>
+		</bigButton>
+	</group>
+</ribbonExtension>

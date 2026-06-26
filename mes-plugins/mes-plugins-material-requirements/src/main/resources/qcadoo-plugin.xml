@@ -135,25 +135,26 @@
 
 		<view:view resource="view/materialRequirementsList.xml" />
 		<view:view resource="view/materialRequirementDetails.xml" />
+		<view:view resource="view/supplyParametersForMaterialRequirements.xml" />
 
 		<view:view-tab resource="view/tabExtensions/orderDetails.xml" />
-		<view:view-tab resource="view/tabExtensions/supplyParameters.xml" />
 
 		<view:view-ribbon-group resource="view/ribbonExtensions/ordersPlanningList.xml" />
+		<view:view-ribbon-group resource="view/ribbonExtensions/supplyParameters.xml" />
 
 		<view:view-listener plugin="orders" view="ordersPlanningList"
 			component="grid" event="printMaterialReqForOrder"
 			class="com.qcadoo.mes.materialRequirements.listeners.OrdersPlanningListListenersMR"
 			method="printMaterialRequirementForOrder" />
 
+		<view:view-listener plugin="deliveries" view="supplyParameters"
+							component="form" event="redirectToSupplyParametersForMaterialRequirements"
+							class="com.qcadoo.mes.materialRequirements.listeners.ParametersListenersMR" method="redirectToSupplyParametersForMaterialRequirements" />
+
 		<view:view-hook view="orderAdditionalDetails" type="beforeRender"
 			plugin="orders"
 			class="com.qcadoo.mes.materialRequirements.hooks.OrderDetailsHooksMR"
 			method="setInputProductsRequiredForTypeFromParameters" />
-
-		<view:view-hook plugin="deliveries" view="supplyParameters"
-						type="beforeRender" class="com.qcadoo.mes.materialRequirements.hooks.ParameterHooksMR"
-						method="onBeforeRenderSupplyParameters"/>
 
 	</modules>
 	

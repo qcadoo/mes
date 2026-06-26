@@ -24,10 +24,11 @@
     ***************************************************************************
 
 -->
+
 <windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                     xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
                     xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
-                    plugin="deliveries" view="supplyParameters">
+                    plugin="materialRequirements" view="supplyParametersForMaterialRequirements">
 
     <windowTab name="coverageTab" reference="coverageTab">
         <component type="gridLayout" name="coverageParametersGridLayout"
