@@ -45,6 +45,7 @@
         <decimal name="produceQuantity"/>
         <decimal name="releaseQuantity"/>
         <decimal name="quantityToRelease"/>
+        <decimal name="reserveMissingQuantity"/>
         <string name="unit"/>
         <string name="supplier"/>
 
