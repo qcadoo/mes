@@ -75,6 +75,8 @@
         <localization:translation-group name="documentGrid" prefix="documentGrid"/>
         <localization:translation-group name="documentPositionsAttributes"
                                         prefix="materialFlowResources.validate.global.error.documentPositionsAttributes"/>
+        <localization:translation-group name="resourceHistory"
+                                        prefix="resourceHistory.validate.global.error.resourceHistory"/>
 
         <model:model model="resource" resource="model/resource.xml"/>
         <model:model model="resourceDto" resource="model/resourceDto.xml"/>
@@ -487,6 +489,9 @@
                             url="/materialFlowResourcesParameters.html"
                             defaultAuthorizationRole="ROLE_PARAMETERS"/>
 
+        <menu:menu-item-url name="resourceHistory" category="materialFlow"
+                            url="/resourceHistory.html" defaultAuthorizationRole="ROLE_MATERIAL_FLOW"/>
+
         <view:view resource="view/resourceDetails.xml"/>
         <view:view resource="view/resourcesList.xml"/>
         <view:view resource="view/documentDetails.xml"/>
@@ -502,6 +507,7 @@
         <view:view resource="view/repackingDetails.xml"/>
         <view:view resource="view/repackingList.xml"/>
         <view:view resource="view/repackingPositionsList.xml"/>
+        <view:view resource="view/resourceHistory.xml"/>
 
         <view:view resource="view/storageLocationsMultiAdd.xml"/>
         <view:view resource="view/storageLocationsDetails.xml"/>
