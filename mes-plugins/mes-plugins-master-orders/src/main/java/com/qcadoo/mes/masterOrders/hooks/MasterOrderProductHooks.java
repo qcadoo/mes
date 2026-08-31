@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -117,7 +117,8 @@ public class MasterOrderProductHooks {
             masterOrder = masterOrder.getDataDefinition().save(masterOrder);
         }
 
-        if (isCompleteMasterOrderAfterOrderingPositions(masterOrderProduct, masterOrder)) {
+        if (isCompleteMasterOrderAfterOrderingPositions(masterOrderProduct, masterOrder)
+                || isCompleteMasterOrderAfterReleasePositions(masterOrderProduct, masterOrder)) {
             masterOrder.setField(MasterOrderFields.STATE, MasterOrderState.COMPLETED.getStringValue());
 
             masterOrder.getDataDefinition().save(masterOrder);
@@ -134,6 +135,16 @@ public class MasterOrderProductHooks {
                 && isAllOrdered(masterOrderProduct, masterOrder);
     }
 
+    private boolean isCompleteMasterOrderAfterReleasePositions(final Entity masterOrderProduct,
+                                                               final Entity masterOrder) {
+        return parameterService.getParameter().getBooleanField(ParameterFieldsMO.COMPLETE_MASTER_ORDER_AFTER_RELEASE_POSITIONS)
+                && !masterOrder.getHasManyField(MasterOrderFields.MASTER_ORDER_PRODUCTS).isEmpty()
+                && !MasterOrderState.COMPLETED.getStringValue().equals(masterOrder.getStringField(MasterOrderFields.STATE))
+                && MasterOrderPositionStatus.RELEASED.getText().equals(
+                masterOrderProduct.getStringField(MasterOrderProductFields.MASTER_ORDER_POSITION_STATUS))
+                && isAllReleased(masterOrderProduct, masterOrder);
+    }
+
     private boolean isAllOrdered(final Entity masterOrderProduct, final Entity masterOrder) {
         List<Entity> newPositions = masterOrder.getHasManyField(MasterOrderFields.MASTER_ORDER_PRODUCTS)
                 .stream().filter(mop -> MasterOrderPositionStatus.NEW.getText().equals(
@@ -141,6 +152,15 @@ public class MasterOrderProductHooks {
                 .filter(mop -> !mop.getId().equals(masterOrderProduct.getId())).collect(Collectors.toList());
 
         return newPositions.isEmpty();
+    }
+
+    private boolean isAllReleased(final Entity masterOrderProduct, final Entity masterOrder) {
+        List<Entity> notReleasedPositions = masterOrder.getHasManyField(MasterOrderFields.MASTER_ORDER_PRODUCTS)
+                .stream().filter(mop -> !MasterOrderPositionStatus.RELEASED.getText().equals(
+                        mop.getStringField(MasterOrderProductFields.MASTER_ORDER_POSITION_STATUS)))
+                .filter(mop -> !mop.getId().equals(masterOrderProduct.getId())).collect(Collectors.toList());
+
+        return notReleasedPositions.isEmpty();
     }
 
 

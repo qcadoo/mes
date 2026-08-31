@@ -96,6 +96,12 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="3">
+                        <component type="checkbox" name="completeMasterOrderAfterReleasePositions" field="#{form}.completeMasterOrderAfterReleasePositions"
+                                   reference="completeMasterOrderAfterReleasePositions" hasDescription="true">
+                            <option type="labelWidth" value="90"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="4">
                         <component type="lookup" name="masterOrderReleaseLocation" reference="masterOrderReleaseLocation"
                                    field="#{form}.masterOrderReleaseLocation" hasDescription="true" >
                             <option type="column" name="name" fields="name" link="true"/>

@@ -36,6 +36,7 @@ public final class ParameterFieldsMO {
     public static final String ADDITIONAL_IMAGE = "additionalImage";
 
     public static final String COMPLETE_MASTER_ORDER_AFTER_ORDERING_POSITIONS = "completeMasterOrderAfterOrderingPositions";
+    public static final String COMPLETE_MASTER_ORDER_AFTER_RELEASE_POSITIONS = "completeMasterOrderAfterReleasePositions";
 
     public static final String ALLOW_MASTER_ORDER_DEADLINE_CHANGE = "allowMasterOrderDeadlineChange";
 
