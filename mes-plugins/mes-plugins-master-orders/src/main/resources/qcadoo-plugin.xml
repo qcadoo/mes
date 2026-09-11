@@ -165,6 +165,9 @@
             <model:boolean name="completeMasterOrderAfterOrderingPositions" default="false"/>
         </model:model-field>
         <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="completeMasterOrderAfterReleasePositions" default="false"/>
+        </model:model-field>
+        <model:model-field model="parameter" plugin="basic">
             <model:hasMany name="masterOrderDefinitions" model="masterOrderDefinition" plugin="masterOrders"
                            joinField="parameter"/>
         </model:model-field>

@@ -10,7 +10,6 @@ public enum MasterOrderPositionStatus {
     MasterOrderPositionStatus(final String technicalCode, final String text) {
         this.technicalCode = technicalCode;
         this.text = text;
-
     }
 
     public String getStringValue() {
