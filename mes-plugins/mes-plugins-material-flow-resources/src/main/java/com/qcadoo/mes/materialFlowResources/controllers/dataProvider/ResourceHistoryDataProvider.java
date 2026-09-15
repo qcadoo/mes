@@ -150,6 +150,7 @@ public class ResourceHistoryDataProvider implements AnalysisDataProvider {
         query.append("    TO_CHAR(document.time, 'YYYY-MM-DD HH24:MI:SS') AS \"date\", ");
         query.append("    location.number AS \"warehouse\", ");
         query.append("    '").append(outboundDocument).append("' AS \"type\", ");
+        query.append("    1 AS \"internalType\", ");
         query.append("    -position.quantity AS \"quantity\", ");
         query.append("    0 AS \"stock\", ");
         query.append("    position.resourcenumber AS \"resourceNumber\", ");
@@ -176,6 +177,7 @@ public class ResourceHistoryDataProvider implements AnalysisDataProvider {
         query.append("    TO_CHAR(document.time, 'YYYY-MM-DD HH24:MI:SS') AS \"date\", ");
         query.append("    location.number AS \"warehouse\", ");
         query.append("    '").append(inboundDocument).append("' AS \"type\", ");
+        query.append("    2 AS \"internalType\", ");
         query.append("    position.quantity AS \"quantity\", ");
         query.append("    0 AS \"stock\", ");
         query.append("    position.resourcenumber AS \"resourceNumber\", ");
@@ -202,6 +204,7 @@ public class ResourceHistoryDataProvider implements AnalysisDataProvider {
         query.append("    TO_CHAR(document.time, 'YYYY-MM-DD HH24:MI:SS') AS \"date\", ");
         query.append("    location.number AS \"warehouse\", ");
         query.append("    '").append(inboundDocument).append("' AS \"type\", ");
+        query.append("    2 AS \"internalType\", ");
         query.append("    position.quantity AS \"quantity\", ");
         query.append("    0 AS \"stock\", ");
         query.append("    position.transferresourcenumber AS \"resourceNumber\", ");
@@ -228,6 +231,7 @@ public class ResourceHistoryDataProvider implements AnalysisDataProvider {
         query.append("    TO_CHAR(correction.createdate, 'YYYY-MM-DD HH24:MI:SS') AS \"date\", ");
         query.append("    location.number AS \"warehouse\", ");
         query.append("    '").append(correction).append("' AS \"type\", ");
+        query.append("    2 AS \"internalType\", ");
         query.append("    correction.newquantity - correction.oldquantity AS \"quantity\", ");
         query.append("    0 AS \"stock\", ");
         query.append("    correction.resourcenumber AS \"resourceNumber\", ");
@@ -249,6 +253,7 @@ public class ResourceHistoryDataProvider implements AnalysisDataProvider {
         query.append("    TO_CHAR(repackingstatechange.dateandtime, 'YYYY-MM-DD HH24:MI:SS') AS \"date\", ");
         query.append("    location.number AS \"warehouse\", ");
         query.append("    '").append(repacking).append("' AS \"type\", ");
+        query.append("    1 AS \"internalType\", ");
         query.append("    -position.quantity AS \"quantity\", ");
         query.append("    0 AS \"stock\", ");
         query.append("    position.resourcenumber AS \"resourceNumber\", ");
@@ -274,6 +279,7 @@ public class ResourceHistoryDataProvider implements AnalysisDataProvider {
         query.append("    TO_CHAR(repackingstatechange.dateandtime, 'YYYY-MM-DD HH24:MI:SS') AS \"date\", ");
         query.append("    location.number AS \"warehouse\", ");
         query.append("    '").append(repacking).append("' AS \"type\", ");
+        query.append("    2 AS \"internalType\", ");
         query.append("    position.quantity AS \"quantity\", ");
         query.append("    0 AS \"stock\", ");
         query.append("    position.createdresourcenumber AS \"resourceNumber\", ");
@@ -369,7 +375,7 @@ public class ResourceHistoryDataProvider implements AnalysisDataProvider {
                 query.append("\" DESC");
             }
         } else {
-            query.append("ORDER BY \"").append(DATE).append("\" ASC");
+            query.append("ORDER BY \"").append(DATE).append("\" ASC, ").append("\"internalType\" ASC");
         }
     }
 
