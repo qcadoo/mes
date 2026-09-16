@@ -197,6 +197,11 @@ public class DocumentDetailsHooks {
         Entity document = documentForm.getPersistedEntityWithIncludedFormValues();
         DocumentState state = DocumentState.of(document);
 
+        FieldComponent sendDateField = (FieldComponent) view.getComponentByReference(DocumentFields.SEND_DATE);
+        if (!DocumentType.RELEASE.getStringValue().equals(document.getStringField(DocumentFields.TYPE))
+                && !DocumentType.TRANSFER.getStringValue().equals(document.getStringField(DocumentFields.TYPE))) {
+            sendDateField.setEnabled(false);
+        }
         if (documentId == null) {
             changeAcceptButtonState(window, false);
             changePrintButtonState(window, false);

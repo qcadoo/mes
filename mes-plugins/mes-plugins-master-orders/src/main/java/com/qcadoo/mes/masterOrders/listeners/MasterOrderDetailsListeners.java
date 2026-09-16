@@ -59,6 +59,10 @@ public class MasterOrderDetailsListeners {
 
     private static final String L_CREATE_ORDER = "createOrder";
 
+    private static final String L_GRID_OPTIONS = "grid.options";
+
+    private static final String L_FILTERS = "filters";
+
     @Autowired
     private OrdersFromMOProductsGenerationService ordersGenerationService;
 
@@ -266,6 +270,36 @@ public class MasterOrderDetailsListeners {
         } else {
             view.addMessage("masterOrders.masterOrderDetails.generateGroup.masterOrderProductAttrValuesNotFilled", ComponentState.MessageType.INFO);
         }
+    }
+
+    public final void showDocuments(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
+        Entity masterOrder = masterOrderForm.getEntity();
+
+        Long masterOrderId = masterOrder.getId();
+
+        if (Objects.isNull(masterOrderId)) {
+            return;
+        }
+
+        Map<String, String> filters = Maps.newHashMap();
+        filters.put("masterOrderNumber", applyInOperator(masterOrder.getStringField(MasterOrderFields.NUMBER)));
+
+        Map<String, Object> gridOptions = Maps.newHashMap();
+        gridOptions.put(L_FILTERS, filters);
+
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put(L_GRID_OPTIONS, gridOptions);
+
+        parameters.put(L_WINDOW_ACTIVE_MENU, "materialFlow.documents");
+
+        String url = "../page/materialFlowResources/documentsList.html";
+        view.redirectTo(url, false, true, parameters);
+    }
+
+    private String applyInOperator(final String value) {
+        return "[" + value + "]";
     }
 
     private boolean checkMasterOrderProductAttrValues(final Entity masterOrderProduct) {

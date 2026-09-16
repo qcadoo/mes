@@ -46,6 +46,7 @@
         <integer name="user_id"/>
         <string name="userName"/>
         <string name="staff"/>
+        <datetime name="sendDate"/>
         <string name="description"/>
         <string name="invoiceNumber"/>
         <string name="stocktakingNumber"/>

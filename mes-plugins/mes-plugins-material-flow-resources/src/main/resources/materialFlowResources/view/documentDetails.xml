@@ -256,6 +256,12 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="6">
+                        <component type="calendar" name="sendDate" reference="sendDate"
+                                   field="sendDate">
+                            <option type="withTimePicker" value="true"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="7">
                         <component type="select" name="state" field="state"
                                    reference="state" defaultEnabled="false">
                         </component>
