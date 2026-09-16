@@ -13,7 +13,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.util.*;
 
 @Service
@@ -69,12 +68,19 @@ public class ResourceHistoryDataProvider implements AnalysisDataProvider {
         return columns;
     }
 
-    public String validate(final String number) throws ParseException {
+    public String validate(final String number) {
         if (number.isEmpty()) {
             return "resourceHistory.validate.global.error.resourceHistory.numberCannotBeEmpty";
         }
 
         return "";
+    }
+
+    public Map<String, Object> getResource(final String number) {
+        String query = "SELECT r.productnumber, r.batchnumber " +
+                "FROM materialflowresources_resourcedto r " +
+                "WHERE r.number = :number ";
+        return jdbcTemplate.queryForMap(query, Collections.singletonMap("number", number));
     }
 
     public List<Map<String, Object>> getRecords(final String number, final String other, final JSONObject filters,

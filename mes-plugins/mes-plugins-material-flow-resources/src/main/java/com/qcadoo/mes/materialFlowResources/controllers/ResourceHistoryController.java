@@ -10,7 +10,6 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.ParseException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -33,8 +32,14 @@ public class ResourceHistoryController {
 
     @ResponseBody
     @RequestMapping(value = "/validate", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
-    public String validate(@RequestParam String number) throws ParseException {
+    public String validate(@RequestParam String number) {
         return resourceHistoryDataProvider.validate(number);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/resource", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, Object> getResource(@RequestParam String number) {
+        return resourceHistoryDataProvider.getResource(number);
     }
 
     @ResponseBody

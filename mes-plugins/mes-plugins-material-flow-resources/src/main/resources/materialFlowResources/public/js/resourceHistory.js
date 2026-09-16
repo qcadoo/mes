@@ -233,6 +233,11 @@ QCD.resourceHistory = (function() {
                         updateAllTotals(grid, dataView);
                     });
 
+                    $.get("/rest/resourceHistory/resource", params, function(resource) {
+                        $('#window\\.mainTab\\.form\\.gridLayout\\.productNumber_input').val(resource.productnumber);
+                        $('#window\\.mainTab\\.form\\.gridLayout\\.batchNumber_input').val(resource.batchnumber);
+                    }, 'json');
+
                     $.get("/rest/resourceHistory/records", params, function(records) {
                         grid.init();
                         grid.autosizeColumns();

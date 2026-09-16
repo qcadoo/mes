@@ -27,7 +27,7 @@
 <view defaultAuthorizationRole="ROLE_MATERIAL_FLOW" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-      name="resourceHistory" menuAccessible="true" modelName="resource">
+      name="resourceHistory" menuAccessible="true" modelName="resourceDto">
 
     <component type="window" name="window" reference="window">
         <ribbon>
@@ -63,9 +63,15 @@
         <windowTab name="mainTab">
             <component type="form" name="form" reference="form">
                 <component type="gridLayout" name="gridLayout"
-                           reference="gridLayout" columns="3" rows="1">
+                           reference="gridLayout" columns="3" rows="3">
                     <layoutElement column="1" row="1">
                         <component type="input" name="number" reference="number"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="2">
+                        <component type="input" name="productNumber" reference="productNumber" defaultEnabled="never"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="3">
+                        <component type="input" name="batchNumber" reference="batchNumber" defaultEnabled="never"/>
                     </layoutElement>
                 </component>
             </component>
