@@ -9,6 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -80,7 +81,11 @@ public class ResourceHistoryDataProvider implements AnalysisDataProvider {
         String query = "SELECT r.productnumber, r.batchnumber " +
                 "FROM materialflowresources_resourcedto r " +
                 "WHERE r.number = :number ";
-        return jdbcTemplate.queryForMap(query, Collections.singletonMap("number", number));
+        try {
+            return jdbcTemplate.queryForMap(query, Collections.singletonMap("number", number));
+        } catch (EmptyResultDataAccessException e) {
+            return new HashMap<>();
+        }
     }
 
     public List<Map<String, Object>> getRecords(final String number, final String other, final JSONObject filters,
