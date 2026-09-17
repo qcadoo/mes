@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -24,9 +24,11 @@
 package com.qcadoo.mes.deliveries.hooks;
 
 import com.qcadoo.mes.advancedGenealogy.criteriaModifier.BatchCriteriaModifier;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductMultiFields;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductMultiPositionFields;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
+import com.qcadoo.mes.deliveries.constants.ParameterFieldsD;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
@@ -50,6 +52,9 @@ public class DeliveredProductAddMultiHooks {
 
     @Autowired
     private BatchCriteriaModifier batchCriteriaModifier;
+
+    @Autowired
+    private ParameterService parameterService;
 
     public void beforeRender(final ViewDefinitionState view) {
         AwesomeDynamicListComponent deliveredProductMultiPositions = (AwesomeDynamicListComponent) view
@@ -104,7 +109,7 @@ public class DeliveredProductAddMultiHooks {
 
     public void boldRequired(final FormComponent formComponent) {
         Arrays.asList(DeliveredProductMultiPositionFields.PRODUCT, DeliveredProductMultiPositionFields.QUANTITY,
-                DeliveredProductMultiPositionFields.ADDITIONAL_QUANTITY, DeliveredProductMultiPositionFields.CONVERSION).stream()
+                        DeliveredProductMultiPositionFields.ADDITIONAL_QUANTITY, DeliveredProductMultiPositionFields.CONVERSION).stream()
                 .forEach(fieldName -> {
                     FieldComponent fieldComponent = formComponent.findFieldComponentByName(fieldName);
 
@@ -121,10 +126,15 @@ public class DeliveredProductAddMultiHooks {
         Entity delivery = deliveredProductMultiEntity.getBelongsToField(DeliveredProductMultiFields.DELIVERY);
         Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);
 
-        if (Objects.nonNull(location)) {
-            LookupComponent storageLocationLookup = (LookupComponent) view
-                    .getComponentByReference(DeliveredProductMultiFields.STORAGE_LOCATION);
+        LookupComponent storageLocationLookup = (LookupComponent) view
+                .getComponentByReference(DeliveredProductMultiFields.STORAGE_LOCATION);
+        Entity parameter = parameterService.getParameter();
+        Entity storageLocation = parameter.getBelongsToField(ParameterFieldsD.DELIVERY_DEFAULT_STORAGE_LOCATION);
+        if (storageLocation != null) {
+            storageLocationLookup.setFieldValue(storageLocation.getId());
+        }
 
+        if (Objects.nonNull(location)) {
             FilterValueHolder filterValueHolder = storageLocationLookup.getFilterValue();
             filterValueHolder.put(L_LOCATION, location.getId());
 

@@ -656,15 +656,17 @@ public class DeliveryDetailsListeners {
                     .setScaleWithDefaultMathContext(orderedProduct.getDecimalField(OrderedProductFields.TOTAL_PRICE)));
         }
 
-        if (Objects.nonNull(location)) {
+        Entity parameter = parameterService.getParameter();
+        Entity storageLocation = parameter.getBelongsToField(ParameterFieldsD.DELIVERY_DEFAULT_STORAGE_LOCATION);
+
+        if (Objects.nonNull(location) && storageLocation == null) {
             Optional<Entity> mayBeStorageLocation = materialFlowResourcesService.findStorageLocationForProduct(location, product.getId());
 
             if (mayBeStorageLocation.isPresent()) {
-                Entity storageLocation = mayBeStorageLocation.get();
-
-                deliveredProduct.setField(DeliveredProductFields.STORAGE_LOCATION, storageLocation);
+                storageLocation = mayBeStorageLocation.get();
             }
         }
+        deliveredProduct.setField(DeliveredProductFields.STORAGE_LOCATION, storageLocation);
 
         if (PluginUtils.isEnabled("supplyNegotiations")) {
             Entity offer = orderedProduct.getBelongsToField(L_OFFER);

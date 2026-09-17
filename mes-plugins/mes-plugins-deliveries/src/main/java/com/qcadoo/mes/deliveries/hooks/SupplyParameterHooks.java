@@ -29,6 +29,7 @@ import com.qcadoo.mes.basic.constants.NumberPatternFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.constants.IncludeInCalculationDeliveries;
 import com.qcadoo.mes.deliveries.constants.ParameterFieldsD;
+import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -37,9 +38,13 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 import static com.qcadoo.mes.deliveries.constants.DefaultAddressType.OTHER;
 import static com.qcadoo.mes.deliveries.constants.ParameterFieldsD.DEFAULT_ADDRESS;
@@ -64,6 +69,7 @@ public class SupplyParameterHooks {
     public void onBeforeRender(final ViewDefinitionState view) {
         setFieldsVisibleAndRequired(view);
         setBatchNumberPatternEnabled(view);
+        setStorageLocationLookupFilterValue(view);
     }
 
     public final void setBatchNumberPatternEnabled(final ViewDefinitionState view) {
@@ -204,5 +210,25 @@ public class SupplyParameterHooks {
             return countProductsWithNumberPattern > 0;
         }
         return false;
+    }
+
+    private void setStorageLocationLookupFilterValue(final ViewDefinitionState view) {
+        LookupComponent locationLookup = (LookupComponent) view.getComponentByReference("warehouse");
+        LookupComponent storageLocationLookup = (LookupComponent) view.getComponentByReference(ParameterFieldsD.DELIVERY_DEFAULT_STORAGE_LOCATION);
+
+        FilterValueHolder filter = storageLocationLookup.getFilterValue();
+
+        Entity warehouse = locationLookup.getEntity();
+
+        if (Objects.nonNull(warehouse)) {
+            filter.put(StorageLocationFields.LOCATION, warehouse.getId());
+            storageLocationLookup.setEnabled(true);
+        } else {
+            filter.remove(StorageLocationFields.LOCATION);
+            storageLocationLookup.setFieldValue(null);
+            storageLocationLookup.setEnabled(false);
+        }
+
+        storageLocationLookup.setFilterValue(filter);
     }
 }

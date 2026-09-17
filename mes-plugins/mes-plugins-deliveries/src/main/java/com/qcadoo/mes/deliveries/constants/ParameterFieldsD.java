@@ -58,5 +58,6 @@ public final class ParameterFieldsD {
     public static final String ACCEPTANCE_OF_DELIVERY = "acceptanceOfDelivery";
 
     public static final String INCLUDE_IN_CALCULATION_DELIVERIES = "includeInCalculationDeliveries";
+    public static final String DELIVERY_DEFAULT_STORAGE_LOCATION = "deliveryDefaultStorageLocation";
 
 }
