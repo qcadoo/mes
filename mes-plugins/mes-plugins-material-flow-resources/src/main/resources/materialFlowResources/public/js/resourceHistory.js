@@ -35,6 +35,22 @@ QCD.resourceHistory = (function() {
         }
     }
 
+    function quantityFormatter(row, cell, value, columnDef, dataContext) {
+        if (value) {
+            value = Math.round(value * 100) / 100;
+            let parts = value.toString().split(".");
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+
+            if (value > 0) {
+                return '+' + parts.join(",");
+            } else {
+                return parts.join(",");
+            }
+        } else {
+            return value;
+        }
+    }
+
     function documentFormatter(row, cell, value, columnDef, dataContext) {
       if (!value) return "";
       return '<a href="main.html#page/materialFlowResources/documentDetails.html?context=%7B%22form.id%22%3A%22' + dataContext['documentId'] + '%22%2C%22form.undefined%22%3Anull%7D" class="slick-blue-link" target="_blank">' + value + '</a>';
@@ -160,6 +176,9 @@ QCD.resourceHistory = (function() {
                         if (columns[i].dataType === '02numeric') {
                             columns[i].cssClass = 'right-align';
                             columns[i].formatter = numberFormatter;
+                        }
+                        if (columns[i].id === 'quantity') {
+                            columns[i].formatter = quantityFormatter;
                         }
                        if (columns[i].id === 'documentNumber') {
                             columns[i].formatter = documentFormatter;
