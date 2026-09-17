@@ -231,7 +231,7 @@ public class ResourceHistoryDataProvider implements AnalysisDataProvider {
         query.append("JOIN materialflowresources_document document ");
         query.append("    ON position.document_id = document.id ");
         query.append("JOIN materialflow_location location ");
-        query.append("    ON document.locationfrom_id = location.id ");
+        query.append("    ON document.locationto_id = location.id ");
         query.append("LEFT JOIN basic_company company ");
         query.append("    ON document.company_id = company.id ");
         query.append("    WHERE document.type in ('05transfer') ");
