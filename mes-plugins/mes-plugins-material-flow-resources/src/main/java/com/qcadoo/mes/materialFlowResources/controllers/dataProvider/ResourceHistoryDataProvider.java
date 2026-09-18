@@ -310,7 +310,7 @@ public class ResourceHistoryDataProvider implements AnalysisDataProvider {
         query.append("JOIN materialflowresources_repackingstatechange repackingstatechange ");
         query.append("    ON repackingstatechange.repacking_id = repacking.id AND repackingstatechange.status = '03successful' AND repackingstatechange.targetstate = '02accepted' ");
         query.append("    WHERE repacking.state = '02accepted' ");
-        query.append("    AND position.createdresourcenumber IN ('").append(numbers).append("')) AS resource_history ");
+        query.append("    AND position.createdresourcenumber IN ('").append(numbers).append("')) AS resource_history WHERE 1=1 ");
     }
 
     private void appendFilters(final JSONObject filters, final StringBuilder query) throws JSONException {
