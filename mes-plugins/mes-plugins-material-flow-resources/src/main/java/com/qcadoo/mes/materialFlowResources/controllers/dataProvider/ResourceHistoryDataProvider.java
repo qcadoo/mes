@@ -78,14 +78,25 @@ public class ResourceHistoryDataProvider implements AnalysisDataProvider {
     }
 
     public Map<String, Object> getResource(final String number) {
+        Map<String, Object> resource = null;
         String query = "SELECT r.productnumber, r.batchnumber " +
                 "FROM materialflowresources_resourcedto r " +
                 "WHERE r.number = :number ";
         try {
-            return jdbcTemplate.queryForMap(query, Collections.singletonMap("number", number));
-        } catch (EmptyResultDataAccessException e) {
-            return new HashMap<>();
+            resource = jdbcTemplate.queryForMap(query, Collections.singletonMap("number", number));
+        } catch (EmptyResultDataAccessException ignored) {
         }
+        if (resource == null) {
+            query = "SELECT p.productnumber, p.batch AS batchnumber " +
+                    "FROM materialflowresources_positiondto p " +
+                    "WHERE p.resourcenumber = :number AND p.documenttype IN ('01receipt', '02internalInbound') ORDER BY id LIMIT 1";
+            try {
+                resource = jdbcTemplate.queryForMap(query, Collections.singletonMap("number", number));
+            } catch (EmptyResultDataAccessException ignored) {
+                resource = new HashMap<>();
+            }
+        }
+        return resource;
     }
 
     public List<Map<String, Object>> getRecords(final String number, final String other, final JSONObject filters,
