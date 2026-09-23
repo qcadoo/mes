@@ -89,7 +89,17 @@ public class ResourceHistoryDataProvider implements AnalysisDataProvider {
         if (resource == null) {
             query = "SELECT p.productnumber, p.batch AS batchnumber " +
                     "FROM materialflowresources_positiondto p " +
-                    "WHERE p.resourcenumber = :number AND p.documenttype IN ('01receipt', '02internalInbound') ORDER BY id LIMIT 1";
+                    "WHERE p.resourcenumber = :number AND p.documenttype IN ('01receipt', '02internalInbound') " +
+                    "UNION " +
+                    "SELECT p.productnumber, p.batch AS batchnumber " +
+                    "FROM materialflowresources_positiondto p " +
+                    "WHERE p.transferresourcenumber = :number AND p.documenttype = '05transfer' " +
+                    "UNION " +
+                    "SELECT pr.number AS productnumber, b.number AS batchnumber " +
+                    "FROM materialflowresources_repackingposition p " +
+                    "JOIN basic_product pr ON pr.id = p.product_id " +
+                    "LEFT JOIN advancedgenealogy_batch b ON b.id = p.batch_id " +
+                    "WHERE p.createdresourcenumber = :number ";
             try {
                 resource = jdbcTemplate.queryForMap(query, Collections.singletonMap("number", number));
             } catch (EmptyResultDataAccessException ignored) {
