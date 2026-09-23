@@ -366,31 +366,31 @@ public class ResourceHistoryDataProvider implements AnalysisDataProvider {
                         break;
 
                     case QUANTITY:
-                        query.append("AND quantity = ").append(value).append(" ");
+                        query.append("AND CAST(quantity AS TEXT) LIKE '%").append(value).append("%' ");
                         break;
 
                     case STOCK:
-                        query.append("AND stock = ").append(value).append(" ");
+                        query.append("AND CAST(stock AS TEXT) LIKE '%").append(value).append("%' ");
                         break;
 
                     case RESOURCE_NUMBER:
-                        query.append("AND UPPER(resourceNumber) LIKE '%").append(value).append("%' ");
+                        query.append("AND UPPER(\"resourceNumber\") LIKE '%").append(value).append("%' ");
                         break;
 
                     case CREATED_RESOURCE:
-                        query.append("AND UPPER(createdResource) LIKE '%").append(value).append("%' ");
+                        query.append("AND UPPER(\"createdResource\") LIKE '%").append(value).append("%' ");
                         break;
 
                     case DOCUMENT_NUMBER:
-                        query.append("AND UPPER(documentNumber) LIKE '%").append(value).append("%' ");
+                        query.append("AND UPPER(\"documentNumber\") LIKE '%").append(value).append("%' ");
                         break;
 
                     case CORRECTION_NUMBER:
-                        query.append("AND UPPER(correctionNumber) LIKE '%").append(value).append("%' ");
+                        query.append("AND UPPER(\"correctionNumber\") LIKE '%").append(value).append("%' ");
                         break;
 
                     case REPACKING_NUMBER:
-                        query.append("AND UPPER(repackingNumber) LIKE '%").append(value)
+                        query.append("AND UPPER(\"repackingNumber\") LIKE '%").append(value)
                                 .append("%' ");
                         break;
 
