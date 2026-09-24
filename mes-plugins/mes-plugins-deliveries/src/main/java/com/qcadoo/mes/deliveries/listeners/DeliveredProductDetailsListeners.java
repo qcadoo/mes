@@ -260,8 +260,9 @@ public class DeliveredProductDetailsListeners {
         Entity product = productLookup.getEntity();
 
         Long storageLocationId = null;
+        Entity parameterLocation = parameter.getBelongsToField(ParameterFieldsD.LOCATION);
         Entity defaultStorageLocation = parameter.getBelongsToField(ParameterFieldsD.DELIVERY_DEFAULT_STORAGE_LOCATION);
-        if (defaultStorageLocation != null) {
+        if (Objects.nonNull(location) && parameterLocation != null && location.getId().equals(parameterLocation.getId()) && defaultStorageLocation != null) {
             storageLocationId = defaultStorageLocation.getId();
         }
 

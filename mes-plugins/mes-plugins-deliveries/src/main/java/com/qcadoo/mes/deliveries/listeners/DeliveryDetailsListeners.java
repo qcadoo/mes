@@ -656,17 +656,22 @@ public class DeliveryDetailsListeners {
                     .setScaleWithDefaultMathContext(orderedProduct.getDecimalField(OrderedProductFields.TOTAL_PRICE)));
         }
 
-        Entity parameter = parameterService.getParameter();
-        Entity storageLocation = parameter.getBelongsToField(ParameterFieldsD.DELIVERY_DEFAULT_STORAGE_LOCATION);
-
-        if (Objects.nonNull(location) && storageLocation == null) {
-            Optional<Entity> mayBeStorageLocation = materialFlowResourcesService.findStorageLocationForProduct(location, product.getId());
-
-            if (mayBeStorageLocation.isPresent()) {
-                storageLocation = mayBeStorageLocation.get();
+        if (Objects.nonNull(location)) {
+            Entity parameter = parameterService.getParameter();
+            Entity parameterLocation = parameter.getBelongsToField(ParameterFieldsD.LOCATION);
+            Entity storageLocation = null;
+            if (parameterLocation != null && location.getId().equals(parameterLocation.getId())) {
+                storageLocation = parameter.getBelongsToField(ParameterFieldsD.DELIVERY_DEFAULT_STORAGE_LOCATION);
             }
+            if (storageLocation == null) {
+                Optional<Entity> mayBeStorageLocation = materialFlowResourcesService.findStorageLocationForProduct(location, product.getId());
+
+                if (mayBeStorageLocation.isPresent()) {
+                    storageLocation = mayBeStorageLocation.get();
+                }
+            }
+            deliveredProduct.setField(DeliveredProductFields.STORAGE_LOCATION, storageLocation);
         }
-        deliveredProduct.setField(DeliveredProductFields.STORAGE_LOCATION, storageLocation);
 
         if (PluginUtils.isEnabled("supplyNegotiations")) {
             Entity offer = orderedProduct.getBelongsToField(L_OFFER);

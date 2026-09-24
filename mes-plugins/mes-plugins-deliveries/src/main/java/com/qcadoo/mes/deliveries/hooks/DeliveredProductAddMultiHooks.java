@@ -126,15 +126,15 @@ public class DeliveredProductAddMultiHooks {
         Entity delivery = deliveredProductMultiEntity.getBelongsToField(DeliveredProductMultiFields.DELIVERY);
         Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);
 
-        LookupComponent storageLocationLookup = (LookupComponent) view
-                .getComponentByReference(DeliveredProductMultiFields.STORAGE_LOCATION);
-        Entity parameter = parameterService.getParameter();
-        Entity storageLocation = parameter.getBelongsToField(ParameterFieldsD.DELIVERY_DEFAULT_STORAGE_LOCATION);
-        if (storageLocation != null) {
-            storageLocationLookup.setFieldValue(storageLocation.getId());
-        }
-
         if (Objects.nonNull(location)) {
+            Entity parameter = parameterService.getParameter();
+            Entity parameterLocation = parameter.getBelongsToField(ParameterFieldsD.LOCATION);
+            Entity storageLocation = parameter.getBelongsToField(ParameterFieldsD.DELIVERY_DEFAULT_STORAGE_LOCATION);
+            LookupComponent storageLocationLookup = (LookupComponent) view
+                    .getComponentByReference(DeliveredProductMultiFields.STORAGE_LOCATION);
+            if (parameterLocation != null && location.getId().equals(parameterLocation.getId()) && storageLocation != null) {
+                storageLocationLookup.setFieldValue(storageLocation.getId());
+            }
             FilterValueHolder filterValueHolder = storageLocationLookup.getFilterValue();
             filterValueHolder.put(L_LOCATION, location.getId());
 
