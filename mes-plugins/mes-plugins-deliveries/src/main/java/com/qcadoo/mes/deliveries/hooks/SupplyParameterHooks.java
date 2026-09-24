@@ -231,4 +231,10 @@ public class SupplyParameterHooks {
 
         storageLocationLookup.setFilterValue(filter);
     }
+
+    public void locationChanged(final ViewDefinitionState viewState, final ComponentState eventPerformer,
+                                final String[] arguments) {
+        LookupComponent storageLocationLookup = (LookupComponent) viewState.getComponentByReference(ParameterFieldsD.DELIVERY_DEFAULT_STORAGE_LOCATION);
+        storageLocationLookup.setFieldValue(null);
+    }
 }

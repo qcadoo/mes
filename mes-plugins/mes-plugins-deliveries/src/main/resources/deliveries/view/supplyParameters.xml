@@ -54,8 +54,8 @@
                                     value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
                             <option type="fieldCode" value="number"/>
                             <listener event="onSelectedEntityChange"
-                                      class="com.qcadoo.view.api.listeners.RerenderListener"
-                                      method="onChangeRerender"/>
+                                      class="com.qcadoo.mes.deliveries.hooks.SupplyParameterHooks"
+                                      method="locationChanged"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2">
