@@ -77,5 +77,6 @@ public final class DocumentFields {
 
     public static final String INVOICE_NUMBER = "invoiceNumber";
     public static final String LOAD_UNITS_TRANSFER = "loadUnitsTransfer";
+    public static final String SEND_DATE = "sendDate";
 
 }

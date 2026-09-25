@@ -657,13 +657,20 @@ public class DeliveryDetailsListeners {
         }
 
         if (Objects.nonNull(location)) {
-            Optional<Entity> mayBeStorageLocation = materialFlowResourcesService.findStorageLocationForProduct(location, product.getId());
-
-            if (mayBeStorageLocation.isPresent()) {
-                Entity storageLocation = mayBeStorageLocation.get();
-
-                deliveredProduct.setField(DeliveredProductFields.STORAGE_LOCATION, storageLocation);
+            Entity parameter = parameterService.getParameter();
+            Entity parameterLocation = parameter.getBelongsToField(ParameterFieldsD.LOCATION);
+            Entity storageLocation = null;
+            if (parameterLocation != null && location.getId().equals(parameterLocation.getId())) {
+                storageLocation = parameter.getBelongsToField(ParameterFieldsD.DELIVERY_DEFAULT_STORAGE_LOCATION);
             }
+            if (storageLocation == null) {
+                Optional<Entity> mayBeStorageLocation = materialFlowResourcesService.findStorageLocationForProduct(location, product.getId());
+
+                if (mayBeStorageLocation.isPresent()) {
+                    storageLocation = mayBeStorageLocation.get();
+                }
+            }
+            deliveredProduct.setField(DeliveredProductFields.STORAGE_LOCATION, storageLocation);
         }
 
         if (PluginUtils.isEnabled("supplyNegotiations")) {

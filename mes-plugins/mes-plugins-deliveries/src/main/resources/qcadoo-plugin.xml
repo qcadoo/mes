@@ -186,6 +186,10 @@
                     method="onCreate"/>
         </model:model-hook>
 
+        <model:model-field plugin="basic" model="parameter">
+            <model:belongsTo name="deliveryDefaultStorageLocation" model="storageLocation" plugin="materialFlowResources"/>
+        </model:model-field>
+
         <model:model-field plugin="basic" model="company">
             <model:hasMany name="products" joinField="company"
                            plugin="deliveries" model="companyProduct" cascade="delete"/>

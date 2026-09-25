@@ -81,6 +81,7 @@
             <option type="column" name="company" fields="companyName"/>
             <option type="column" name="address" fields="documentAddress"/>
             <option type="column" name="staff" fields="staff"/>
+            <option type="column" name="sendDate" fields="sendDate"/>
             <option type="column" name="batch" fields="batch" width="50"/>
             <option type="column" name="expirationDate" fields="expirationDate" width="60"/>
             <option type="column" name="productionDate" fields="productionDate" width="60"/>
@@ -95,9 +96,9 @@
             <option type="order" column="documentDate" direction="desc"/>
 
             <option type="searchable"
-                    value="value,sellingPrice,locationFrom,locationTo,productNumber,productName,productGlobalTypeOfMaterial,productCategory,quantity,givenQuantity,givenUnit,conversion,documentType,documentNumber,documentName,company,batch,expirationDate,productionDate,storageLocation,state,waste,documentDate,price,typeOfLoadUnit,palletNumber,address,staff,resourceNumber,transferResourceNumber,invoiceNumber,documentDescription,stocktakingNumber"/>
+                    value="value,sellingPrice,locationFrom,locationTo,productNumber,productName,productGlobalTypeOfMaterial,productCategory,quantity,givenQuantity,givenUnit,conversion,documentType,documentNumber,documentName,company,batch,expirationDate,productionDate,storageLocation,state,waste,documentDate,price,typeOfLoadUnit,palletNumber,address,staff,sendDate,resourceNumber,transferResourceNumber,invoiceNumber,documentDescription,stocktakingNumber"/>
             <option type="orderable"
-                    value="value,sellingPrice,locationFrom,locationTo,productNumber,productName,productGlobalTypeOfMaterial,productCategory,quantity,givenQuantity,givenUnit,conversion,documentType,documentNumber,documentName,company,batch,expirationDate,productionDate,storageLocation,state,waste,documentDate,price,typeOfLoadUnit,palletNumber,address,staff,resourceNumber,transferResourceNumber,invoiceNumber,documentDescription,stocktakingNumber"/>
+                    value="value,sellingPrice,locationFrom,locationTo,productNumber,productName,productGlobalTypeOfMaterial,productCategory,quantity,givenQuantity,givenUnit,conversion,documentType,documentNumber,documentName,company,batch,expirationDate,productionDate,storageLocation,state,waste,documentDate,price,typeOfLoadUnit,palletNumber,address,staff,sendDate,resourceNumber,transferResourceNumber,invoiceNumber,documentDescription,stocktakingNumber"/>
 
             <option type="creatable" value="false"/>
             <option type="deletable" value="false"/>

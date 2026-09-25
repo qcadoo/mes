@@ -251,6 +251,19 @@
 						]]>
                     </script>
                 </bigButton>
+                <bigButton name="showDocuments" icon="generateIcon24.png">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{form}.performEvent('showDocuments', []);
+									}
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
             </group>
         </ribbon>
 
@@ -488,6 +501,9 @@
                 <listener event="changeState"
                           class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners"
                           method="changeState"/>
+                <listener event="showDocuments"
+                          class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners"
+                          method="showDocuments"/>
             </component>
         </windowTab>
 

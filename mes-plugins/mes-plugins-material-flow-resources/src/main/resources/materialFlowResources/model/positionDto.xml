@@ -66,6 +66,7 @@
         <string name="resourceNumber"/>
         <string name="transferResourceNumber"/>
         <string name="staff"/>
+        <datetime name="sendDate"/>
         <string name="invoiceNumber"/>
         <date name="pickingDate"/>
         <string name="pickingWorker"/>

@@ -9,11 +9,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.util.*;
 
 @Service
@@ -69,12 +69,44 @@ public class ResourceHistoryDataProvider implements AnalysisDataProvider {
         return columns;
     }
 
-    public String validate(final String number) throws ParseException {
+    public String validate(final String number) {
         if (number.isEmpty()) {
             return "resourceHistory.validate.global.error.resourceHistory.numberCannotBeEmpty";
         }
 
         return "";
+    }
+
+    public Map<String, Object> getResource(final String number) {
+        Map<String, Object> resource = null;
+        String query = "SELECT r.productnumber, r.batchnumber " +
+                "FROM materialflowresources_resourcedto r " +
+                "WHERE r.number = :number ";
+        try {
+            resource = jdbcTemplate.queryForMap(query, Collections.singletonMap("number", number));
+        } catch (EmptyResultDataAccessException ignored) {
+        }
+        if (resource == null) {
+            query = "SELECT p.productnumber, p.batch AS batchnumber " +
+                    "FROM materialflowresources_positiondto p " +
+                    "WHERE p.resourcenumber = :number AND p.documenttype IN ('01receipt', '02internalInbound') " +
+                    "UNION " +
+                    "SELECT p.productnumber, p.batch AS batchnumber " +
+                    "FROM materialflowresources_positiondto p " +
+                    "WHERE p.transferresourcenumber = :number AND p.documenttype = '05transfer' " +
+                    "UNION " +
+                    "SELECT pr.number AS productnumber, b.number AS batchnumber " +
+                    "FROM materialflowresources_repackingposition p " +
+                    "JOIN basic_product pr ON pr.id = p.product_id " +
+                    "LEFT JOIN advancedgenealogy_batch b ON b.id = p.batch_id " +
+                    "WHERE p.createdresourcenumber = :number ";
+            try {
+                resource = jdbcTemplate.queryForMap(query, Collections.singletonMap("number", number));
+            } catch (EmptyResultDataAccessException ignored) {
+                resource = new HashMap<>();
+            }
+        }
+        return resource;
     }
 
     public List<Map<String, Object>> getRecords(final String number, final String other, final JSONObject filters,
@@ -147,9 +179,10 @@ public class ResourceHistoryDataProvider implements AnalysisDataProvider {
         query.append("SELECT id, date, warehouse, type, quantity, stock, \"resourceNumber\", \"createdResource\", \"documentNumber\", \"documentId\", \"correctionNumber\", \"correctionId\", \"repackingNumber\", \"repackingId\", company ");
         query.append("FROM (SELECT ");
         query.append("    position.id::text AS \"id\", ");
-        query.append("    TO_CHAR(document.time, 'YYYY-MM-DD HH24:MI:SS') AS \"date\", ");
+        query.append("    TO_CHAR(documentstatechange.dateandtime, 'YYYY-MM-DD HH24:MI:SS') AS \"date\", ");
         query.append("    location.number AS \"warehouse\", ");
         query.append("    '").append(outboundDocument).append("' AS \"type\", ");
+        query.append("    1 AS \"internalType\", ");
         query.append("    -position.quantity AS \"quantity\", ");
         query.append("    0 AS \"stock\", ");
         query.append("    position.resourcenumber AS \"resourceNumber\", ");
@@ -168,14 +201,17 @@ public class ResourceHistoryDataProvider implements AnalysisDataProvider {
         query.append("    ON document.locationfrom_id = location.id ");
         query.append("LEFT JOIN basic_company company ");
         query.append("    ON document.company_id = company.id ");
+        query.append("JOIN materialflowresources_documentstatechange documentstatechange ");
+        query.append("    ON documentstatechange.document_id = document.id AND documentstatechange.status = '03successful' AND documentstatechange.targetstate = '02accepted' ");
         query.append("    WHERE document.type in ('03internalOutbound','04release','05transfer') ");
         query.append("    AND document.state = '02accepted' ");
         query.append("    AND position.resourcenumber IN ('").append(numbers).append("') ");
         query.append("UNION SELECT ");
         query.append("    position.id::text AS \"id\", ");
-        query.append("    TO_CHAR(document.time, 'YYYY-MM-DD HH24:MI:SS') AS \"date\", ");
+        query.append("    TO_CHAR(documentstatechange.dateandtime, 'YYYY-MM-DD HH24:MI:SS') AS \"date\", ");
         query.append("    location.number AS \"warehouse\", ");
         query.append("    '").append(inboundDocument).append("' AS \"type\", ");
+        query.append("    2 AS \"internalType\", ");
         query.append("    position.quantity AS \"quantity\", ");
         query.append("    0 AS \"stock\", ");
         query.append("    position.resourcenumber AS \"resourceNumber\", ");
@@ -194,14 +230,17 @@ public class ResourceHistoryDataProvider implements AnalysisDataProvider {
         query.append("    ON document.locationto_id = location.id ");
         query.append("LEFT JOIN basic_company company ");
         query.append("    ON document.company_id = company.id ");
+        query.append("JOIN materialflowresources_documentstatechange documentstatechange ");
+        query.append("    ON documentstatechange.document_id = document.id AND documentstatechange.status = '03successful' AND documentstatechange.targetstate = '02accepted' ");
         query.append("    WHERE document.type in ('01receipt','02internalInbound') ");
         query.append("    AND document.state = '02accepted' ");
         query.append("    AND position.resourcenumber IN ('").append(numbers).append("') ");
         query.append("UNION SELECT ");
         query.append("    'transfer' || position.id AS \"id\", ");
-        query.append("    TO_CHAR(document.time, 'YYYY-MM-DD HH24:MI:SS') AS \"date\", ");
+        query.append("    TO_CHAR(documentstatechange.dateandtime, 'YYYY-MM-DD HH24:MI:SS') AS \"date\", ");
         query.append("    location.number AS \"warehouse\", ");
         query.append("    '").append(inboundDocument).append("' AS \"type\", ");
+        query.append("    2 AS \"internalType\", ");
         query.append("    position.quantity AS \"quantity\", ");
         query.append("    0 AS \"stock\", ");
         query.append("    position.transferresourcenumber AS \"resourceNumber\", ");
@@ -217,9 +256,11 @@ public class ResourceHistoryDataProvider implements AnalysisDataProvider {
         query.append("JOIN materialflowresources_document document ");
         query.append("    ON position.document_id = document.id ");
         query.append("JOIN materialflow_location location ");
-        query.append("    ON document.locationfrom_id = location.id ");
+        query.append("    ON document.locationto_id = location.id ");
         query.append("LEFT JOIN basic_company company ");
         query.append("    ON document.company_id = company.id ");
+        query.append("JOIN materialflowresources_documentstatechange documentstatechange ");
+        query.append("    ON documentstatechange.document_id = document.id AND documentstatechange.status = '03successful' AND documentstatechange.targetstate = '02accepted' ");
         query.append("    WHERE document.type in ('05transfer') ");
         query.append("    AND document.state = '02accepted' ");
         query.append("    AND position.transferresourcenumber IN ('").append(numbers).append("') ");
@@ -228,6 +269,7 @@ public class ResourceHistoryDataProvider implements AnalysisDataProvider {
         query.append("    TO_CHAR(correction.createdate, 'YYYY-MM-DD HH24:MI:SS') AS \"date\", ");
         query.append("    location.number AS \"warehouse\", ");
         query.append("    '").append(correction).append("' AS \"type\", ");
+        query.append("    2 AS \"internalType\", ");
         query.append("    correction.newquantity - correction.oldquantity AS \"quantity\", ");
         query.append("    0 AS \"stock\", ");
         query.append("    correction.resourcenumber AS \"resourceNumber\", ");
@@ -249,6 +291,7 @@ public class ResourceHistoryDataProvider implements AnalysisDataProvider {
         query.append("    TO_CHAR(repackingstatechange.dateandtime, 'YYYY-MM-DD HH24:MI:SS') AS \"date\", ");
         query.append("    location.number AS \"warehouse\", ");
         query.append("    '").append(repacking).append("' AS \"type\", ");
+        query.append("    1 AS \"internalType\", ");
         query.append("    -position.quantity AS \"quantity\", ");
         query.append("    0 AS \"stock\", ");
         query.append("    position.resourcenumber AS \"resourceNumber\", ");
@@ -274,6 +317,7 @@ public class ResourceHistoryDataProvider implements AnalysisDataProvider {
         query.append("    TO_CHAR(repackingstatechange.dateandtime, 'YYYY-MM-DD HH24:MI:SS') AS \"date\", ");
         query.append("    location.number AS \"warehouse\", ");
         query.append("    '").append(repacking).append("' AS \"type\", ");
+        query.append("    2 AS \"internalType\", ");
         query.append("    position.quantity AS \"quantity\", ");
         query.append("    0 AS \"stock\", ");
         query.append("    position.createdresourcenumber AS \"resourceNumber\", ");
@@ -293,7 +337,7 @@ public class ResourceHistoryDataProvider implements AnalysisDataProvider {
         query.append("JOIN materialflowresources_repackingstatechange repackingstatechange ");
         query.append("    ON repackingstatechange.repacking_id = repacking.id AND repackingstatechange.status = '03successful' AND repackingstatechange.targetstate = '02accepted' ");
         query.append("    WHERE repacking.state = '02accepted' ");
-        query.append("    AND position.createdresourcenumber IN ('").append(numbers).append("')) AS resource_history ");
+        query.append("    AND position.createdresourcenumber IN ('").append(numbers).append("')) AS resource_history WHERE 1=1 ");
     }
 
     private void appendFilters(final JSONObject filters, final StringBuilder query) throws JSONException {
@@ -322,31 +366,31 @@ public class ResourceHistoryDataProvider implements AnalysisDataProvider {
                         break;
 
                     case QUANTITY:
-                        query.append("AND quantity = ").append(value).append(" ");
+                        query.append("AND CAST(quantity AS TEXT) LIKE '%").append(value).append("%' ");
                         break;
 
                     case STOCK:
-                        query.append("AND stock = ").append(value).append(" ");
+                        query.append("AND CAST(stock AS TEXT) LIKE '%").append(value).append("%' ");
                         break;
 
                     case RESOURCE_NUMBER:
-                        query.append("AND UPPER(resourceNumber) LIKE '%").append(value).append("%' ");
+                        query.append("AND UPPER(\"resourceNumber\") LIKE '%").append(value).append("%' ");
                         break;
 
                     case CREATED_RESOURCE:
-                        query.append("AND UPPER(createdResource) LIKE '%").append(value).append("%' ");
+                        query.append("AND UPPER(\"createdResource\") LIKE '%").append(value).append("%' ");
                         break;
 
                     case DOCUMENT_NUMBER:
-                        query.append("AND UPPER(documentNumber) LIKE '%").append(value).append("%' ");
+                        query.append("AND UPPER(\"documentNumber\") LIKE '%").append(value).append("%' ");
                         break;
 
                     case CORRECTION_NUMBER:
-                        query.append("AND UPPER(correctionNumber) LIKE '%").append(value).append("%' ");
+                        query.append("AND UPPER(\"correctionNumber\") LIKE '%").append(value).append("%' ");
                         break;
 
                     case REPACKING_NUMBER:
-                        query.append("AND UPPER(repackingNumber) LIKE '%").append(value)
+                        query.append("AND UPPER(\"repackingNumber\") LIKE '%").append(value)
                                 .append("%' ");
                         break;
 
@@ -369,7 +413,7 @@ public class ResourceHistoryDataProvider implements AnalysisDataProvider {
                 query.append("\" DESC");
             }
         } else {
-            query.append("ORDER BY \"").append(DATE).append("\" ASC");
+            query.append("ORDER BY \"").append(DATE).append("\" ASC, ").append("\"internalType\" ASC");
         }
     }
 
