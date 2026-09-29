@@ -307,6 +307,7 @@
         <view:view resource="view/deliveryByPalletTypeReportDetails.xml"/>
         <view:view resource="view/changeStorageLocationHelper.xml"/>
         <view:view resource="view/deliveredProductAttributeValDetails.xml"/>
+        <view:view resource="view/productsWithPrice.xml"/>
 
         <view:view-tab resource="view/tabExtensions/companyDetails.xml"/>
         <view:view-tab resource="view/tabExtensions/productDetails.xml"/>

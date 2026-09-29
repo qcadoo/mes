@@ -112,6 +112,7 @@ public class DeliveryDetailsHooks {
         orderGridByProductNumber(view);
         updateChangeStorageLocationButton(view);
         updateAssignStorageLocationsButton(view);
+        updateEnterPricesButton(view);
         generateDeliveryNumber(view);
         fillCompanyFieldsForSupplier(view);
         fillDeliveryAddressDefaultValue(view);
@@ -476,6 +477,32 @@ public class DeliveryDetailsHooks {
         }
 
         updateButtonState(changeStorageLocationsRibbonActionItem, isEnabled);
+    }
+
+    private void updateEnterPricesButton(final ViewDefinitionState view) {
+        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        GridComponent deliveredProductsGrid = (GridComponent) view.getComponentByReference(DeliveryFields.DELIVERED_PRODUCTS);
+
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
+        RibbonGroup pricesRibbonGroup = window.getRibbon().getGroupByName("prices");
+        RibbonActionItem enterPricesRibbonActionItem = pricesRibbonGroup.getItemByName("enterPrices");
+
+        List<Entity> selectedProducts = deliveredProductsGrid.getSelectedEntities();
+
+        Long deliveryId = deliveryForm.getEntityId();
+
+        boolean isEnabled = false;
+
+        if (Objects.nonNull(deliveryId)) {
+            Entity delivery = deliveriesService.getDelivery(deliveryId);
+
+            String state = delivery.getStringField(DeliveryFields.STATE);
+            boolean isFinished = DeliveryState.RECEIVED.getStringValue().equals(state) || DeliveryState.DECLINED.getStringValue().equals(state) || DeliveryState.ACCEPTED.getStringValue().equals(state);
+
+            isEnabled = !selectedProducts.isEmpty() && !isFinished;
+        }
+
+        updateButtonState(enterPricesRibbonActionItem, isEnabled);
     }
 
     private void updateAssignStorageLocationsButton(final ViewDefinitionState view) {

@@ -987,6 +987,22 @@ public class DeliveryDetailsListeners {
         }
     }
 
+    public void enterPrices(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        GridComponent deliveredProductsGrid = (GridComponent) view.getComponentByReference(DeliveryFields.DELIVERED_PRODUCTS);
+
+        Set<Long> selectedEntities = deliveredProductsGrid.getSelectedEntitiesIds();
+
+        Map<String, Object> parameters = Maps.newHashMap();
+
+        parameters.put("form.id", deliveryForm.getEntityId());
+        parameters.put("form.selectedProducts", selectedEntities.stream().map(String::valueOf).collect(Collectors.joining(",")));
+
+        String url = "../page/deliveries/productsWithPrice.html";
+
+        view.openModal(url, parameters);
+    }
+
     private DataDefinition getDeliveredProductMultiPositionDD() {
         return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
                 DeliveriesConstants.MODEL_DELIVERED_PRODUCT_MULTI_POSITION);

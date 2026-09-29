@@ -297,16 +297,30 @@
             </group>
             <group name="prices">
                 <bigButton name="fillPrices" icon="genealogyIcon24.png" state="enabled">
-                <script>
-                    <![CDATA[
- 					    this.addOnChangeListener({
- 						    onClick: function() {
- 								if(window.canClose()) {
-									#{form}.performEvent('fillPrices', []);
- 								}
- 						    }
- 					    });
-				    ]]>
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    if(window.canClose()) {
+                                        #{form}.performEvent('fillPrices', []);
+                                    }
+                                }
+                            });
+                        ]]>
+                    </script>
+                </bigButton>
+                <bigButton name="enterPrices" icon="genealogyIcon24.png"
+                           message="enterPrices" state="disabled">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    if(window.canClose()) {
+                                        #{form}.performEvent('enterPrices', []);
+                                    }
+                                }
+                            });
+                        ]]>
                     </script>
                 </bigButton>
             </group>
@@ -707,6 +721,9 @@
                 <listener event="fillPrices"
                           class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
                           method="fillPrices"/>
+                <listener event="enterPrices"
+                          class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
+                          method="enterPrices"/>
                 <listener event="printDeliveredProductLabels"
                           class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
                           method="printDeliveredProductLabels"/>
