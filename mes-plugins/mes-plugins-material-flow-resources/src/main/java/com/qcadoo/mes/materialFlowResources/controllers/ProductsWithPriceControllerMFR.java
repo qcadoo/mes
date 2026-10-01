@@ -1,9 +1,9 @@
-package com.qcadoo.mes.deliveries.controllers;
+package com.qcadoo.mes.materialFlowResources.controllers;
 
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
-import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
+import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.exception.EntityRuntimeException;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.List;
 
 @Controller
-public class ProductsWithPriceController {
+public class ProductsWithPriceControllerMFR {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -29,7 +29,7 @@ public class ProductsWithPriceController {
     private TranslationService translationService;
 
     @ResponseBody
-    @RequestMapping(value = "/deliveries/productsWithPrice", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/materialFlowResources/productsWithPrice", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ProductsWithPriceResponse productsWithPrice(@RequestBody ProductsWithPriceRequest productsWithPriceRequest) {
 
         List<ProductWithPricePosition> positions = productsWithPriceRequest.getPositions();
@@ -39,8 +39,8 @@ public class ProductsWithPriceController {
             tryUpdatePositions(positions);
         } catch (EntityRuntimeException exc) {
             productsWithPriceResponse.setStatus(ProductsWithPriceResponse.SimpleResponseStatus.ERROR);
-            productsWithPriceResponse.setMessage(translationService.translate("deliveries.productsWithPrice.updateErrorForProduct",
-                    LocaleContextHolder.getLocale(), exc.getEntity().getBelongsToField(DeliveredProductFields.PRODUCT)
+            productsWithPriceResponse.setMessage(translationService.translate("materialFlowResources.productsWithPrice.updateErrorForProduct",
+                    LocaleContextHolder.getLocale(), exc.getEntity().getBelongsToField(PositionFields.PRODUCT)
                             .getStringField(ProductFields.NUMBER)));
         }
 
@@ -51,16 +51,13 @@ public class ProductsWithPriceController {
     @Transactional
     public void tryUpdatePositions(List<ProductWithPricePosition> positions) {
         for (ProductWithPricePosition position : positions) {
-            Entity deliveredProduct = dataDefinitionService
-                    .get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERED_PRODUCT).get(position.getId());
+            Entity positionEntity = dataDefinitionService
+                    .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_POSITION).get(position.getId());
 
-            deliveredProduct.setField(DeliveredProductFields.PRICE_PER_UNIT, position.getValue());
-            if (position.getValue() == null) {
-                deliveredProduct.setField(DeliveredProductFields.TOTAL_PRICE, position.getValue());
-            }
-            deliveredProduct = deliveredProduct.getDataDefinition().save(deliveredProduct);
-            if (!deliveredProduct.isValid()) {
-                throw new EntityRuntimeException(deliveredProduct);
+            positionEntity.setField(PositionFields.PRICE, position.getValue());
+            positionEntity = positionEntity.getDataDefinition().save(positionEntity);
+            if (!positionEntity.isValid()) {
+                throw new EntityRuntimeException(positionEntity);
             }
         }
     }

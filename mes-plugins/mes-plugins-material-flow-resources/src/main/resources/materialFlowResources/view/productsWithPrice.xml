@@ -23,7 +23,7 @@
     ***************************************************************************
 
 -->
-<view name="productsWithPrice" modelName="delivery" defaultAuthorizationRole="ROLE_DELIVERIES"
+<view name="productsWithPrice" modelName="document" defaultAuthorizationRole="ROLE_DOCUMENTS_CORRECTIONS_MIN_STATES"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 
@@ -34,12 +34,12 @@
                 <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.performBackWithoutConfirm" />
             </group>
             <group name="action">
-                <bigButton name="enterPricesToDeliveredProducts" icon="generateIcon24.png" state="enabled">
+                <bigButton name="enterPricesToPositions" icon="generateIcon24.png" state="enabled">
                     <script>
                         <![CDATA[
                             this.addOnChangeListener({
                                 onClick: function() {
-                                    #{deliveredProducts}.enterPricesToDeliveredProducts();
+                                    #{positions}.enterPricesToPositions();
                                 }
                             });
                         ]]>
@@ -53,25 +53,25 @@
                 <component type="gridLayout" name="gridLayout" columns="1"
                            rows="1">
                     <layoutElement column="1" row="1">
-                        <component type="grid" name="deliveredProducts" reference="deliveredProducts"
-                                   useDto="true" source="#{form}.deliveredProductDtos">
+                        <component type="grid" name="positions" reference="positions"
+                                   source="#{form}.positions">
                             <script>
                                 QCD = QCD || {};
                                 QCD.translations = QCD.translations || {};
 
-                                QCD.translations['deliveries.productsWithPrice.invalidScale.max'] =
-                                '#{translate(deliveries.productsWithPrice.invalidScale.max)}';
+                                QCD.translations['materialFlowResources.productsWithPrice.invalidScale.max'] =
+                                '#{translate(materialFlowResources.productsWithPrice.invalidScale.max)}';
 
-                                QCD.translations['deliveries.productsWithPrice.invalidPrecision.max'] =
-                                '#{translate(deliveries.productsWithPrice.invalidPrecision.max)}';
+                                QCD.translations['materialFlowResources.productsWithPrice.invalidPrecision.max'] =
+                                '#{translate(materialFlowResources.productsWithPrice.invalidPrecision.max)}';
                             </script>
-                            <script type="text/javascript" src="/deliveries/public/js/productsWithPrice.js"></script>
+                            <script type="text/javascript" src="/materialFlowResources/public/js/productsWithPrice.js"></script>
 
-                            <option type="column" name="succession" fields="succession" width="10"/>
+                            <option type="column" name="number" fields="number" width="10"/>
 
-                            <option type="column" name="productNumber" fields="productNumber" width="80"/>
-                            <option type="column" name="pricePerUnit" fields="pricePerUnit" width="80" formatter="input"/>
-                            <option type="order" column="succession" direction="asc"/>
+                            <option type="column" name="productNumber" fields="product" expression="#product['number']" width="80"/>
+                            <option type="column" name="price" fields="price" width="80" formatter="input"/>
+                            <option type="order" column="number" direction="asc"/>
 
                             <option type="searchable" value=""/>
                             <option type="orderable" value=""/>
@@ -81,9 +81,9 @@
                             <option type="paginable" value="false"/>
                             <option type="prioritizable" value="false"/>
 
-                            <listener event="enterPricesToDeliveredProducts"
-                                      class="com.qcadoo.mes.deliveries.listeners.ProductsWithPriceListeners"
-                                      method="enterPricesToDeliveredProducts"/>
+                            <listener event="enterPricesToPositions"
+                                      class="com.qcadoo.mes.materialFlowResources.listeners.ProductsWithPriceListenersMFR"
+                                      method="enterPricesToPositions"/>
                         </component>
                     </layoutElement>
                 </component>
@@ -96,7 +96,7 @@
     </component>
 
     <hooks>
-        <beforeRender class="com.qcadoo.mes.deliveries.hooks.ProductsWithPriceHooks"
+        <beforeRender class="com.qcadoo.mes.materialFlowResources.hooks.ProductsWithPriceHooksMFR"
                       method="onBeforeRender"/>
     </hooks>
 

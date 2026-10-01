@@ -42,6 +42,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -94,6 +95,7 @@ public class DocumentDetailsHooks {
         lockNumberAndTypeChange(view);
         fetchNameAndNumberFromDatabase(view);
         setRibbonState(view);
+        updateEnterPricesButton(view);
         fillAddressLookupCriteriaModifier(view);
         setAdditionalConditions(view);
     }
@@ -379,6 +381,33 @@ public class DocumentDetailsHooks {
 
         showProductAttributesActionItem.setEnabled(isSaved);
         showProductAttributesActionItem.requestUpdate(true);
+    }
+
+    private void updateEnterPricesButton(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
+        RibbonGroup pricesRibbonGroup = window.getRibbon().getGroupByName("prices");
+        RibbonActionItem enterPricesRibbonActionItem = pricesRibbonGroup.getItemByName("enterPrices");
+
+        Long documentId = form.getEntityId();
+
+        boolean isEnabled = false;
+
+        if (Objects.nonNull(documentId)) {
+            Entity document = form.getEntity();
+            String state = document.getStringField(DocumentFields.STATE);
+            String documentType = document.getStringField(DocumentFields.TYPE);
+
+            boolean isDraft = DocumentState.DRAFT.getStringValue().equals(state);
+            boolean isInbound = Lists.newArrayList(DocumentType.RECEIPT.getStringValue(),
+                    DocumentType.INTERNAL_INBOUND.getStringValue()).contains(documentType);
+
+            isEnabled = isDraft && isInbound;
+        }
+
+        enterPricesRibbonActionItem.setEnabled(isEnabled);
+        enterPricesRibbonActionItem.requestUpdate(true);
     }
 
     public void fillAddressLookupCriteriaModifier(final ViewDefinitionState view) {
