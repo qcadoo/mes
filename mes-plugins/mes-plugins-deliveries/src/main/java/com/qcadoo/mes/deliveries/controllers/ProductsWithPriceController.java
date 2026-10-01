@@ -58,7 +58,11 @@ public class ProductsWithPriceController {
             if (position.getValue() == null) {
                 deliveredProduct.setField(DeliveredProductFields.TOTAL_PRICE, position.getValue());
             }
-            deliveredProduct = deliveredProduct.getDataDefinition().save(deliveredProduct);
+            try {
+                deliveredProduct = deliveredProduct.getDataDefinition().save(deliveredProduct);
+            } catch (IllegalStateException exception) {
+                throw new EntityRuntimeException(deliveredProduct);
+            }
             if (!deliveredProduct.isValid()) {
                 throw new EntityRuntimeException(deliveredProduct);
             }
