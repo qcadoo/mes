@@ -352,7 +352,7 @@ public class ResourceHistoryDataProvider implements AnalysisDataProvider {
 
                 switch (key) {
                     case DATE:
-                        query.append("AND TO_CHAR(date, 'YYYY-MM-DD HH24:MI:SS') LIKE '%")
+                        query.append("AND TO_CHAR(date::timestamp, 'YYYY-MM-DD HH24:MI:SS') LIKE '%")
                                 .append(value).append("%' ");
                         break;
 
@@ -370,7 +370,6 @@ public class ResourceHistoryDataProvider implements AnalysisDataProvider {
                         break;
 
                     case STOCK:
-                        query.append("AND CAST(stock AS TEXT) LIKE '%").append(value).append("%' ");
                         break;
 
                     case RESOURCE_NUMBER:
@@ -411,6 +410,9 @@ public class ResourceHistoryDataProvider implements AnalysisDataProvider {
                 query.append("\" ASC");
             } else {
                 query.append("\" DESC");
+            }
+            if (DATE.equals(sortColumn)) {
+                query.append(", ").append("\"internalType\" ASC");
             }
         } else {
             query.append("ORDER BY \"").append(DATE).append("\" ASC, ").append("\"internalType\" ASC");
