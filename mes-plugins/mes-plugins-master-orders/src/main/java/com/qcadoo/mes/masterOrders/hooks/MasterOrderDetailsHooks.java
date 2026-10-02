@@ -64,6 +64,7 @@ public class MasterOrderDetailsHooks {
     private static final String L_GENERATE_ORDERS = "generateOrders";
 
     private static final String L_CREATE_RELEASE_DOCUMENT = "createReleaseDocument";
+    private static final String SHOW_DOCUMENTS = "showDocuments";
 
     private static final String L_SIZE_ACTIONS = "sizeActions";
 
@@ -149,6 +150,7 @@ public class MasterOrderDetailsHooks {
 
         RibbonGroup documentsRibbonGroup = window.getRibbon().getGroupByName(L_DOCUMENTS);
         RibbonActionItem createReleaseDocumentRibbonActionItem = documentsRibbonGroup.getItemByName(L_CREATE_RELEASE_DOCUMENT);
+        RibbonActionItem showDocumentsRibbonActionItem = documentsRibbonGroup.getItemByName(SHOW_DOCUMENTS);
         createReleaseDocumentRibbonActionItem.setMessage("masterOrders.ribbon.documents.createReleaseDocument.message");
 
         RibbonGroup sizeActionsGroup = window.getRibbon().getGroupByName(L_SIZE_ACTIONS);
@@ -180,6 +182,8 @@ public class MasterOrderDetailsHooks {
         toggleGenerateOrdersButton(view);
         addProductsByAttributeRibbonActionItem.setEnabled(isSaved && isStateNotCompletedAndDeclined);
         addProductsByAttributeRibbonActionItem.requestUpdate(true);
+        showDocumentsRibbonActionItem.setEnabled(isSaved);
+        showDocumentsRibbonActionItem.requestUpdate(true);
         window.requestRibbonRender();
     }
 
