@@ -36,6 +36,9 @@
         <string name="externalNumber"/>
         <boolean name="externalSynchronized" default="true"/>
         <datetime name="deadline"/>
+        <datetime name="dateOfReceipt"/>
+        <date name="sendDate"/>
+        <integer name="orderFulfillmentCycleTime"/>
         <string name="company"/>
         <string name="companyCategory"/>
         <string name="companyPayer"/>
@@ -49,6 +52,7 @@
         <string name="salesPlanName"/>
         <boolean name="warehouseOrder"/>
         <string name="baseOrderId"/>
+        <integer name="numberOfReleasedPositions"/>
     </fields>
 
     <masterModel plugin="masterOrders" model="masterOrder"/>
