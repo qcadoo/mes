@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.qcadoo.mes</groupId>
         <artifactId>mes-plugins</artifactId>
-        <version>1.5-SNAPSHOT</version>
+        <version>1.5-SNAPSHOT-DEV</version>
     </parent>
 
     <artifactId>mes-plugins-production-counting</artifactId>
@@ -18,27 +18,27 @@
         <dependency>
             <groupId>com.qcadoo.mes</groupId>
             <artifactId>mes-plugins-operation-time-calculations</artifactId>
-            <version>1.5-SNAPSHOT</version>
+            <version>1.5-SNAPSHOT-DEV</version>
         </dependency>
         <dependency>
             <groupId>com.qcadoo.mes</groupId>
             <artifactId>mes-plugins-orders</artifactId>
-            <version>1.5-SNAPSHOT</version>
+            <version>1.5-SNAPSHOT-DEV</version>
         </dependency>
         <dependency>
             <groupId>com.qcadoo.mes</groupId>
             <artifactId>mes-plugins-basic-production-counting</artifactId>
-            <version>1.5-SNAPSHOT</version>
+            <version>1.5-SNAPSHOT-DEV</version>
         </dependency>
         <dependency>
             <groupId>com.qcadoo.mes</groupId>
             <artifactId>mes-plugins-states</artifactId>
-            <version>1.5-SNAPSHOT</version>
+            <version>1.5-SNAPSHOT-DEV</version>
         </dependency>
         <dependency>
             <groupId>com.qcadoo.mes</groupId>
             <artifactId>mes-plugins-cost-calculation</artifactId>
-            <version>1.5-SNAPSHOT</version>
+            <version>1.5-SNAPSHOT-DEV</version>
         </dependency>
     </dependencies>
 
