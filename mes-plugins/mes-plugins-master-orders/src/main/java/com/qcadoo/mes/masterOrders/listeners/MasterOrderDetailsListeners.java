@@ -31,6 +31,7 @@ import com.qcadoo.mes.masterOrders.constants.*;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.ComponentState;
@@ -296,6 +297,35 @@ public class MasterOrderDetailsListeners {
 
         String url = "../page/materialFlowResources/documentsList.html";
         view.redirectTo(url, false, true, parameters);
+    }
+
+    public final void fillPrices(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
+        GridComponent masterOrderProductsGrid = (GridComponent) view
+                .getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
+
+        Entity masterOrder = masterOrderForm.getEntity();
+        Date masterOrderCreateDate = masterOrder.getDateField(MasterOrderFields.CREATE_DATE);
+        List<Entity> masterOrderProducts = masterOrderProductsGrid.getSelectedEntities();
+        DataDefinition masterOrderProductDD = getMasterOrderProductDD();
+        for (Entity masterOrderProduct : masterOrderProducts) {
+            masterOrderProduct = masterOrderProductDD.get(masterOrderProduct.getId());
+            Date date = masterOrderProduct.getDateField(MasterOrderProductFields.DELIVERY_DATE);
+            if (date == null) {
+                date = masterOrderCreateDate;
+            }
+            Entity product = masterOrderProduct.getBelongsToField(MasterOrderProductFields.PRODUCT);
+            SearchCriteriaBuilder scb = dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER,
+                            MasterOrdersConstants.MODEL_PRICES_LIST).find().add(SearchRestrictions.belongsTo(PricesListFields.PRODUCT, product))
+                    .add(SearchRestrictions.le(PricesListFields.DATE_FROM, date))
+                    .add(SearchRestrictions.or(SearchRestrictions.gt(PricesListFields.DATE_TO, date), SearchRestrictions.isNull(PricesListFields.DATE_TO))).setMaxResults(1);
+            Entity pricesList = scb.uniqueResult();
+            if (pricesList != null) {
+                masterOrderProduct.setField(MasterOrderProductFields.PRICE, pricesList.getDecimalField(PricesListFields.PRICE));
+                masterOrderProductDD.save(masterOrderProduct);
+            }
+        }
     }
 
     private String applyInOperator(final String value) {

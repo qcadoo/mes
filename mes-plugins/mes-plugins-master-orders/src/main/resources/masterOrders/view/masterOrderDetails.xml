@@ -265,6 +265,21 @@
                     </script>
                 </bigButton>
             </group>
+            <group name="prices">
+                <bigButton name="fillPrices" icon="generateIcon24.png">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{form}.performEvent('fillPrices', []);
+									}
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab">
@@ -504,6 +519,9 @@
                 <listener event="showDocuments"
                           class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners"
                           method="showDocuments"/>
+                <listener event="fillPrices"
+                          class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners"
+                          method="fillPrices"/>
             </component>
         </windowTab>
 

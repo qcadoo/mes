@@ -23,17 +23,6 @@
  */
 package com.qcadoo.mes.masterOrders.hooks;
 
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.ADD_MASTER_PREFIX_TO_NUMBER;
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.NUMBER;
-
-import java.util.Collections;
-import java.util.Objects;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.constants.CompanyFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderState;
@@ -41,14 +30,20 @@ import com.qcadoo.mes.masterOrders.criteriaModifier.OrderCriteriaModifier;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+
+import java.util.Collections;
+import java.util.Objects;
+
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.ADD_MASTER_PREFIX_TO_NUMBER;
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.NUMBER;
 
 @Service
 public class MasterOrderDetailsHooks {
@@ -64,6 +59,7 @@ public class MasterOrderDetailsHooks {
     private static final String L_GENERATE_ORDERS = "generateOrders";
 
     private static final String L_CREATE_RELEASE_DOCUMENT = "createReleaseDocument";
+    private static final String SHOW_DOCUMENTS = "showDocuments";
 
     private static final String L_SIZE_ACTIONS = "sizeActions";
 
@@ -149,7 +145,11 @@ public class MasterOrderDetailsHooks {
 
         RibbonGroup documentsRibbonGroup = window.getRibbon().getGroupByName(L_DOCUMENTS);
         RibbonActionItem createReleaseDocumentRibbonActionItem = documentsRibbonGroup.getItemByName(L_CREATE_RELEASE_DOCUMENT);
+        RibbonActionItem showDocumentsRibbonActionItem = documentsRibbonGroup.getItemByName(SHOW_DOCUMENTS);
         createReleaseDocumentRibbonActionItem.setMessage("masterOrders.ribbon.documents.createReleaseDocument.message");
+        RibbonGroup pricesRibbonGroup = window.getRibbon().getGroupByName("prices");
+        RibbonActionItem fillPricesRibbonActionItem = pricesRibbonGroup.getItemByName("fillPrices");
+        fillPricesRibbonActionItem.setMessage("masterOrders.ribbon.prices.fillPrices.message");
 
         RibbonGroup sizeActionsGroup = window.getRibbon().getGroupByName(L_SIZE_ACTIONS);
         RibbonActionItem addProductsByAttributeRibbonActionItem = sizeActionsGroup.getItemByName(L_ADD_PRODUCTS_BY_ATTRIBUTE);
@@ -164,9 +164,11 @@ public class MasterOrderDetailsHooks {
         if (masterOrderProductsGrid.getSelectedEntities().isEmpty()) {
             createOrderRibbonActionItem.setEnabled(false);
             createReleaseDocumentRibbonActionItem.setEnabled(false);
+            fillPricesRibbonActionItem.setEnabled(false);
         } else {
             createOrderRibbonActionItem.setEnabled(masterOrderProductsGrid.getSelectedEntities().size() == 1);
             createReleaseDocumentRibbonActionItem.setEnabled(true);
+            fillPricesRibbonActionItem.setEnabled(true);
         }
 
         if (PluginUtils.isEnabled("goodFood") && !masterOrderProductsGrid.getEntities().isEmpty()) {
@@ -180,6 +182,9 @@ public class MasterOrderDetailsHooks {
         toggleGenerateOrdersButton(view);
         addProductsByAttributeRibbonActionItem.setEnabled(isSaved && isStateNotCompletedAndDeclined);
         addProductsByAttributeRibbonActionItem.requestUpdate(true);
+        showDocumentsRibbonActionItem.setEnabled(isSaved);
+        showDocumentsRibbonActionItem.requestUpdate(true);
+        fillPricesRibbonActionItem.requestUpdate(true);
         window.requestRibbonRender();
     }
 

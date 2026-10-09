@@ -15,6 +15,7 @@ import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
+import com.qcadoo.mes.orders.util.AdditionalUnitService;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
@@ -23,7 +24,6 @@ import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.constants.DictionaryItemFields;
 import com.qcadoo.plugin.api.PluginUtils;
-import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -35,6 +35,7 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.qcadoo.mes.orders.constants.OrderFields.PLANNED_QUANTITY_FOR_ADDITIONAL_UNIT;
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.DEADLINE_FOR_ORDER_BASED_ON_DELIVERY_DATE;
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.DEADLINE_FOR_ORDER_EARLIER_THAN_DELIVERY_DATE;
 
@@ -89,6 +90,9 @@ public class OrdersFromMOProductsGenerationService {
 
     @Autowired
     private OrdersGenerationService ordersGenerationService;
+
+    @Autowired
+    private AdditionalUnitService additionalUnitService;
 
     public GenerationOrderResult generateOrders(final List<Entity> masterOrderProducts, final Date start,
                                                 final Date finish,
@@ -511,6 +515,11 @@ public class OrdersFromMOProductsGenerationService {
                 mop.isValid();
             }
         }
+
+        BigDecimal quantityForAdditionalUnit = additionalUnitService.getQuantityAfterConversion(order, additionalUnitService.getAdditionalUnit(product),
+                order.getDecimalField(OrderFields.PLANNED_QUANTITY), product.getStringField(ProductFields.UNIT));
+
+        order.setField(PLANNED_QUANTITY_FOR_ADDITIONAL_UNIT, quantityForAdditionalUnit);
 
         order.setField(L_IGNORE_MISSING_COMPONENTS, parameter.getBooleanField(L_IGNORE_MISSING_COMPONENTS));
 

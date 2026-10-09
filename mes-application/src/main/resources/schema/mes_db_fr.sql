@@ -19261,6 +19261,74 @@ ALTER SEQUENCE public.masterorders_masterorderdefinition_id_seq OWNED BY public.
 
 
 --
+-- Name: materialflowresources_document; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.materialflowresources_document (
+    id bigint NOT NULL,
+    number character varying(255) NOT NULL,
+    type character varying(255) NOT NULL,
+    "time" timestamp without time zone,
+    state character varying(255) DEFAULT '01draft'::character varying,
+    locationfrom_id bigint,
+    locationto_id bigint,
+    user_id bigint,
+    delivery_id bigint,
+    active boolean DEFAULT true,
+    createdate timestamp without time zone,
+    updatedate timestamp without time zone,
+    createuser character varying(255),
+    updateuser character varying(255),
+    order_id bigint,
+    description character varying(2048),
+    suborder_id bigint,
+    company_id bigint,
+    maintenanceevent_id bigint,
+    entityversion bigint DEFAULT 0,
+    plannedevent_id bigint,
+    name character varying(255),
+    createlinkeddocument boolean,
+    linkeddocumentlocation_id bigint,
+    address_id bigint,
+    generationdate timestamp without time zone,
+    filename character varying(255),
+    acceptationinprogress boolean DEFAULT false,
+    externalnumber character varying(255),
+    issend boolean DEFAULT false,
+    wms boolean DEFAULT false,
+    datesendtowms timestamp without time zone,
+    stateinwms character varying(255),
+    pickingworker character varying(255),
+    dateconfirmationofcompletion timestamp without time zone,
+    staff_id bigint,
+    ordersgroup_id bigint,
+    invoicenumber character varying(2048),
+    masterorder_id bigint,
+    stocktaking_id bigint,
+    loadunitstransfer boolean DEFAULT false,
+    senddate timestamp without time zone
+);
+
+
+--
+-- Name: qcadoomodel_dictionaryitem; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.qcadoomodel_dictionaryitem (
+    id bigint NOT NULL,
+    name character varying(255),
+    externalnumber character varying(255),
+    description character varying(2048),
+    technicalcode character varying(255),
+    dictionary_id bigint,
+    active boolean DEFAULT true,
+    entityversion bigint DEFAULT 0,
+    isinteger boolean DEFAULT false,
+    priority integer
+);
+
+
+--
 -- Name: masterorders_masterorderdto; Type: VIEW; Schema: public; Owner: -
 --
 
@@ -19294,6 +19362,20 @@ CREATE VIEW public.masterorders_masterorderdto AS
            FROM manyproducts
           WHERE (manyproducts.cumulatedmasterorderquantity > (0)::numeric)
           GROUP BY manyproducts.masterorderid
+        ), releasedpositions AS (
+         SELECT masterorders_masterorderproduct.masterorder_id AS masterorderid,
+            count(*) AS cnt
+           FROM public.masterorders_masterorderproduct
+          WHERE ((masterorders_masterorderproduct.masterorderpositionstatus)::text = (( SELECT qcadoomodel_dictionaryitem.name
+                   FROM public.qcadoomodel_dictionaryitem
+                  WHERE ((qcadoomodel_dictionaryitem.technicalcode)::text = '03released'::text)))::text)
+          GROUP BY masterorders_masterorderproduct.masterorder_id
+        ), releaseddocuments AS (
+         SELECT d.masterorder_id AS masterorderid,
+            max(d.senddate) AS senddate
+           FROM public.materialflowresources_document d
+          WHERE (d.masterorder_id IS NOT NULL)
+          GROUP BY d.masterorder_id
         )
  SELECT masterorder.id,
     masterorderdefinition.number AS masterorderdefinitionnumber,
@@ -19317,14 +19399,20 @@ CREATE VIEW public.masterorders_masterorderdto AS
     salesplan.name AS salesplanname,
     company.contractorcategory AS companycategory,
     masterorder.warehouseorder,
-    masterorder.baseorderid
-   FROM ((((((public.masterorders_masterorder masterorder
+    masterorder.baseorderid,
+    masterorder.dateofreceipt,
+    (releaseddocuments.senddate)::date AS senddate,
+    ((releaseddocuments.senddate)::date - (masterorder.dateofreceipt)::date) AS orderfulfillmentcycletime,
+    COALESCE((releasedpositions.cnt)::integer, 0) AS numberofreleasedpositions
+   FROM ((((((((public.masterorders_masterorder masterorder
      LEFT JOIN public.masterorders_salesplan salesplan ON ((salesplan.id = masterorder.salesplan_id)))
      LEFT JOIN public.masterorders_masterorderdefinition masterorderdefinition ON ((masterorderdefinition.id = masterorder.masterorderdefinition_id)))
      LEFT JOIN public.basic_company company ON ((company.id = masterorder.company_id)))
      LEFT JOIN public.basic_company companypayer ON ((companypayer.id = masterorder.companypayer_id)))
      LEFT JOIN orderedpositions ON ((orderedpositions.masterorderid = masterorder.id)))
-     LEFT JOIN cumulatedpositions ON ((cumulatedpositions.masterorderid = masterorder.id)));
+     LEFT JOIN cumulatedpositions ON ((cumulatedpositions.masterorderid = masterorder.id)))
+     LEFT JOIN releasedpositions ON ((releasedpositions.masterorderid = masterorder.id)))
+     LEFT JOIN releaseddocuments ON ((releaseddocuments.masterorderid = masterorder.id)));
 
 
 --
@@ -20587,56 +20675,6 @@ CREATE SEQUENCE public.materialflowresources_defaultstoragelocationdto_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-
-
---
--- Name: materialflowresources_document; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.materialflowresources_document (
-    id bigint NOT NULL,
-    number character varying(255) NOT NULL,
-    type character varying(255) NOT NULL,
-    "time" timestamp without time zone,
-    state character varying(255) DEFAULT '01draft'::character varying,
-    locationfrom_id bigint,
-    locationto_id bigint,
-    user_id bigint,
-    delivery_id bigint,
-    active boolean DEFAULT true,
-    createdate timestamp without time zone,
-    updatedate timestamp without time zone,
-    createuser character varying(255),
-    updateuser character varying(255),
-    order_id bigint,
-    description character varying(2048),
-    suborder_id bigint,
-    company_id bigint,
-    maintenanceevent_id bigint,
-    entityversion bigint DEFAULT 0,
-    plannedevent_id bigint,
-    name character varying(255),
-    createlinkeddocument boolean,
-    linkeddocumentlocation_id bigint,
-    address_id bigint,
-    generationdate timestamp without time zone,
-    filename character varying(255),
-    acceptationinprogress boolean DEFAULT false,
-    externalnumber character varying(255),
-    issend boolean DEFAULT false,
-    wms boolean DEFAULT false,
-    datesendtowms timestamp without time zone,
-    stateinwms character varying(255),
-    pickingworker character varying(255),
-    dateconfirmationofcompletion timestamp without time zone,
-    staff_id bigint,
-    ordersgroup_id bigint,
-    invoicenumber character varying(2048),
-    masterorder_id bigint,
-    stocktaking_id bigint,
-    loadunitstransfer boolean DEFAULT false,
-    senddate timestamp without time zone
-);
 
 
 --
@@ -29645,24 +29683,6 @@ CREATE SEQUENCE public.qcadoomodel_dictionary_id_seq
 --
 
 ALTER SEQUENCE public.qcadoomodel_dictionary_id_seq OWNED BY public.qcadoomodel_dictionary.id;
-
-
---
--- Name: qcadoomodel_dictionaryitem; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.qcadoomodel_dictionaryitem (
-    id bigint NOT NULL,
-    name character varying(255),
-    externalnumber character varying(255),
-    description character varying(2048),
-    technicalcode character varying(255),
-    dictionary_id bigint,
-    active boolean DEFAULT true,
-    entityversion bigint DEFAULT 0,
-    isinteger boolean DEFAULT false,
-    priority integer
-);
 
 
 --
