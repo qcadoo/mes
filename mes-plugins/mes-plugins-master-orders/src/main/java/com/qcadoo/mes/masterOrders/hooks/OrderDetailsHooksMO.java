@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -104,6 +104,7 @@ public class OrderDetailsHooksMO {
         FieldComponent plannedQuantityField = (FieldComponent) view.getComponentByReference(OrderFields.PLANNED_QUANTITY);
         FieldComponent descriptionField = (FieldComponent) view.getComponentByReference(OrderFields.DESCRIPTION);
         FieldComponent vendorInfoField = (FieldComponent) view.getComponentByReference(OrderFields.VENDOR_INFO);
+        FieldComponent orderCategoryField = (FieldComponent) view.getComponentByReference(OrderFields.ORDER_CATEGORY);
 
         LookupComponent addressLookup = (LookupComponent) view.getComponentByReference(OrderFields.ADDRESS);
         if (masterOrder != null && productComponent != null && productComponent.getId() != null) {
@@ -124,6 +125,7 @@ public class OrderDetailsHooksMO {
             Date masterOrderFinishDate = masterOrder.getDateField(MasterOrderFields.FINISH_DATE);
             Entity masterOrderAddress = masterOrder.getBelongsToField(MasterOrderFields.ADDRESS);
             String vendorInfo = productComponent.getStringField(MasterOrderProductFields.VENDOR_INFO);
+            String orderCategory = productComponent.getStringField(MasterOrderProductFields.ORDER_CATEGORY);
             Entity masterOrderProductDto = dataDefinitionService
                     .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_POSITION_DTO)
                     .get(productComponent.getId());
@@ -145,6 +147,11 @@ public class OrderDetailsHooksMO {
             if (vendorInfo != null && StringUtils.isEmpty((String) vendorInfoField.getFieldValue())) {
                 vendorInfoField.setFieldValue(vendorInfo);
                 vendorInfoField.requestComponentUpdateState();
+            }
+
+            if (orderCategory != null && StringUtils.isEmpty((String) orderCategoryField.getFieldValue())) {
+                orderCategoryField.setFieldValue(orderCategory);
+                orderCategoryField.requestComponentUpdateState();
             }
 
             if ((companyLookup.getEntity() == null) && (masterOrderCompany != null)) {
