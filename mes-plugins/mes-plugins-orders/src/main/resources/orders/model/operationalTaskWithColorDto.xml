@@ -58,6 +58,7 @@
 		<string name="percentageOfExecutionCellColor"/>
 		<integer name="actualStaff"/>
 		<boolean name="hasChangeovers"/>
+		<string name="producedBatch"/>
 	</fields>
 
 	<hooks />
