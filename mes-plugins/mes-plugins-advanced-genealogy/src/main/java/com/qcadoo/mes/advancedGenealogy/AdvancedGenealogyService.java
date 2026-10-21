@@ -23,12 +23,7 @@
  */
 package com.qcadoo.mes.advancedGenealogy;
 
-import java.util.Objects;
-
 import com.google.common.base.Strings;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.advancedGenealogy.constants.AdvancedGenealogyConstants;
 import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
 import com.qcadoo.mes.advancedGenealogy.constants.ParameterFieldsAG;
@@ -40,6 +35,10 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 public class AdvancedGenealogyService {
@@ -107,6 +106,19 @@ public class AdvancedGenealogyService {
 
     public Entity getBatch(final String number, final Entity product, final Entity supplier) {
         SearchCriteriaBuilder searchCriteriaBuilder = getBatchDD().find().add(SearchRestrictions.eq(BatchFields.NUMBER, number));
+
+        if (Objects.nonNull(product)) {
+            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(BatchFields.PRODUCT, product));
+        }
+        if (Objects.nonNull(supplier)) {
+            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(BatchFields.SUPPLIER, supplier));
+        }
+
+        return searchCriteriaBuilder.setMaxResults(1).uniqueResult();
+    }
+
+    public Entity getBatchCaseInsensitive(final String number, final Entity product, final Entity supplier) {
+        SearchCriteriaBuilder searchCriteriaBuilder = getBatchDD().find().add(SearchRestrictions.iEq(BatchFields.NUMBER, number));
 
         if (Objects.nonNull(product)) {
             searchCriteriaBuilder.add(SearchRestrictions.belongsTo(BatchFields.PRODUCT, product));
