@@ -74,6 +74,7 @@
         <datetime name="createDate"/>
         <date name="clientDate"/>
         <decimal name="performanceNorm"/>
+        <string name="producedBatch"/>
 
     </fields>
     <hooks>

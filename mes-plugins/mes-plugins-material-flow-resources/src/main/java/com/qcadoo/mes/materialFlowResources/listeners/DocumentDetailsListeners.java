@@ -431,6 +431,11 @@ public class DocumentDetailsListeners {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         List<String> ids = Arrays.stream(args[0].replace("[", "").replace("]", "").replaceAll("\"", "").split("\\s*,\\s*")).filter(StringUtils::isNotEmpty).collect(Collectors.toList());
         if (ids.size() > 0) {
+            if (Long.parseLong(ids.get(0)) == 0) {
+                view.addMessage("materialFlowResources.info.document.enterPrices.noPositionsSelected", MessageType.INFO);
+
+                return;
+            }
             Map<String, Object> parameters = Maps.newHashMap();
 
             parameters.put("form.id", form.getEntityId());

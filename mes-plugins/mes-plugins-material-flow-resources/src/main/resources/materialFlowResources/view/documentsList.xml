@@ -71,11 +71,10 @@
 							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
 								deleteButton.disable();
 								acceptButton.disable();
-							} else if (selectedEntitiesArray.length == 1) {
-                                if (selectedEntitiesArray[0].fields.type == "01receipt" || selectedEntitiesArray[0].fields.type == "04release") {
-						            assignInvoiceNumberButton.enable();
-								}
 							} else {
+                                if (selectedEntitiesArray.length == 1 && (selectedEntitiesArray[0].fields.type == "01receipt" || selectedEntitiesArray[0].fields.type == "04release")) {
+                                    assignInvoiceNumberButton.enable();
+                                }
 							    for (var i in selectedEntitiesArray) {
 							        if (selectedEntitiesArray[i].fields.state == "02accepted") {
                                         deleteButton.disable("#{translate(materialFlowResources.actions.error)}");

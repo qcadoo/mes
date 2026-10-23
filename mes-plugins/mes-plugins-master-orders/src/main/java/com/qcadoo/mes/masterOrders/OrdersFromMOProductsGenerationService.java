@@ -433,6 +433,7 @@ public class OrdersFromMOProductsGenerationService {
             order.setField(OrderFields.ADDRESS, masterOrder.getBelongsToField(MasterOrderFields.ADDRESS));
             order.setField(OrderFieldsMO.MASTER_ORDER, masterOrder);
             order.setField(OrderFields.VENDOR_INFO, masterOrderProduct.getMasterOrderProduct().getStringField(MasterOrderProductFields.VENDOR_INFO));
+            order.setField(OrderFields.ORDER_CATEGORY, masterOrderProduct.getMasterOrderProduct().getStringField(MasterOrderProductFields.ORDER_CATEGORY));
 
             fillDates(parameter, order, masterOrderDeadline, masterOrderStartDate, masterOrderFinishDate);
         }

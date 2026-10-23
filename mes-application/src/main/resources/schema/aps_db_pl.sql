@@ -5448,6 +5448,7 @@ CREATE TABLE public.arch_masterorders_masterorderproduct (
     priceslistprice numeric(9,2),
     releasequantity numeric(14,5),
     quantitytorelease numeric(14,5),
+    ordercategory character varying(255),
     archived boolean DEFAULT false
 );
 
@@ -17653,7 +17654,8 @@ CREATE TABLE public.masterorders_masterorderproduct (
     price numeric(14,5),
     priceslistprice numeric(9,2),
     releasequantity numeric(14,5),
-    quantitytorelease numeric(14,5)
+    quantitytorelease numeric(14,5),
+    ordercategory character varying(255)
 );
 
 
@@ -23656,6 +23658,12 @@ CREATE VIEW public.orders_operationaltaskwithcolordto AS
            FROM (public.jointable_operationaltask_staff jos
              JOIN public.basic_staff staff ON ((jos.staff_id = staff.id)))
           GROUP BY jos.operationaltask_id
+        ), tracking_records AS (
+         SELECT string_agg((b.number)::text, ','::text) AS producedbatch,
+            advancedgenealogy_trackingrecord.order_id
+           FROM (public.advancedgenealogy_trackingrecord
+             JOIN public.advancedgenealogy_batch b ON ((b.id = advancedgenealogy_trackingrecord.producedbatch_id)))
+          GROUP BY advancedgenealogy_trackingrecord.order_id
         )
  SELECT operationaltask.id,
     operationaltask.number,
@@ -23689,8 +23697,9 @@ CREATE VIEW public.orders_operationaltaskwithcolordto AS
     NULL::numeric AS wastesquantity,
     NULL::integer AS suborder_id,
     NULL::text AS subordernumber,
-    (count(workstationchangeoverforoperationaltask.id) <> 0) AS haschangeovers
-   FROM ((((((((public.orders_operationaltask operationaltask
+    (count(workstationchangeoverforoperationaltask.id) <> 0) AS haschangeovers,
+    tr.producedbatch
+   FROM (((((((((public.orders_operationaltask operationaltask
      LEFT JOIN public.orders_workstationchangeoverforoperationaltask workstationchangeoverforoperationaltask ON ((workstationchangeoverforoperationaltask.currentoperationaltask_id = operationaltask.id)))
      LEFT JOIN operational_task_staff ots ON ((operationaltask.id = ots.operationaltask_id)))
      LEFT JOIN public.basic_division division ON ((operationaltask.division_id = division.id)))
@@ -23699,8 +23708,9 @@ CREATE VIEW public.orders_operationaltaskwithcolordto AS
      LEFT JOIN public.technologies_technologyoperationcomponent technologyoperationcomponent ON ((technologyoperationcomponent.id = operationaltask.technologyoperationcomponent_id)))
      LEFT JOIN public.basic_product product ON ((product.id = operationaltask.product_id)))
      LEFT JOIN public.basic_product orderproduct ON ((orderproduct.id = ordersorder.product_id)))
+     LEFT JOIN tracking_records tr ON ((tr.order_id = ordersorder.id)))
   WHERE ((operationaltask.type)::text = '01otherCase'::text)
-  GROUP BY operationaltask.id, operationaltask.number, operationaltask.name, operationaltask.description, operationaltask.type, operationaltask.state, operationaltask.startdate, operationaltask.finishdate, ots.staffname, division.number, ((workstation.id)::integer), workstation.number, ((ordersorder.id)::integer), ordersorder.number, ((technologyoperationcomponent.id)::integer), technologyoperationcomponent.nodenumber, technologyoperationcomponent.issubcontracting, (product.number)::text, (product.name)::text, (product.unit)::text, (orderproduct.number)::text, (orderproduct.name)::text, operationaltask.actualstaff
+  GROUP BY operationaltask.id, operationaltask.number, operationaltask.name, operationaltask.description, operationaltask.type, operationaltask.state, operationaltask.startdate, operationaltask.finishdate, ots.staffname, division.number, ((workstation.id)::integer), workstation.number, ((ordersorder.id)::integer), ordersorder.number, ((technologyoperationcomponent.id)::integer), technologyoperationcomponent.nodenumber, technologyoperationcomponent.issubcontracting, (product.number)::text, (product.name)::text, (product.unit)::text, (orderproduct.number)::text, (orderproduct.name)::text, operationaltask.actualstaff, tr.producedbatch
 UNION ALL
  SELECT operationaltask.id,
     operationaltask.number,
@@ -23745,8 +23755,9 @@ UNION ALL
     sum((COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric))::numeric(14,5)) AS wastesquantity,
     (suborder.id)::integer AS suborder_id,
     (suborder.number)::text AS subordernumber,
-    (count(workstationchangeoverforoperationaltask.id) <> 0) AS haschangeovers
-   FROM ((((((((((((public.orders_operationaltask operationaltask
+    (count(workstationchangeoverforoperationaltask.id) <> 0) AS haschangeovers,
+    tr.producedbatch
+   FROM (((((((((((((public.orders_operationaltask operationaltask
      LEFT JOIN public.orders_workstationchangeoverforoperationaltask workstationchangeoverforoperationaltask ON ((workstationchangeoverforoperationaltask.currentoperationaltask_id = operationaltask.id)))
      LEFT JOIN operational_task_staff ots ON ((operationaltask.id = ots.operationaltask_id)))
      LEFT JOIN public.basic_division division ON ((operationaltask.division_id = division.id)))
@@ -23759,8 +23770,9 @@ UNION ALL
      LEFT JOIN public.productioncounting_productiontracking productiontracking ON (((productiontracking.order_id = ordersorder.id) AND (productiontracking.technologyoperationcomponent_id = technologyoperationcomponent.id) AND ((productiontracking.state)::text = ('02accepted'::character varying)::text))))
      LEFT JOIN public.productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent ON (((trackingoperationproductoutcomponent.productiontracking_id = productiontracking.id) AND (trackingoperationproductoutcomponent.product_id = product.id))))
      LEFT JOIN public.subcontractorportal_suborder suborder ON ((suborder.id = operationaltask.suborder_id)))
+     LEFT JOIN tracking_records tr ON ((tr.order_id = ordersorder.id)))
   WHERE ((operationaltask.type)::text = '02executionOperationInOrder'::text)
-  GROUP BY operationaltask.id, operationaltask.number, operationaltask.name, operationaltask.description, operationaltask.type, operationaltask.state, operationaltask.startdate, operationaltask.finishdate, ots.staffname, division.number, ((workstation.id)::integer), workstation.number, ((ordersorder.id)::integer), ordersorder.number, ((technologyoperationcomponent.id)::integer), technologyoperationcomponent.nodenumber, technologyoperationcomponent.issubcontracting, (product.number)::text, (product.name)::text, (product.unit)::text, productioncountingquantitydto.plannedquantity, (orderproduct.number)::text, (orderproduct.name)::text, operationaltask.actualstaff, ((suborder.id)::integer), (suborder.number)::text;
+  GROUP BY operationaltask.id, operationaltask.number, operationaltask.name, operationaltask.description, operationaltask.type, operationaltask.state, operationaltask.startdate, operationaltask.finishdate, ots.staffname, division.number, ((workstation.id)::integer), workstation.number, ((ordersorder.id)::integer), ordersorder.number, ((technologyoperationcomponent.id)::integer), technologyoperationcomponent.nodenumber, technologyoperationcomponent.issubcontracting, (product.number)::text, (product.name)::text, (product.unit)::text, productioncountingquantitydto.plannedquantity, (orderproduct.number)::text, (orderproduct.name)::text, operationaltask.actualstaff, ((suborder.id)::integer), (suborder.number)::text, tr.producedbatch;
 
 
 --
@@ -24126,6 +24138,12 @@ CREATE VIEW public.orders_orderplanninglistdto AS
             technologies_barcodeoperationcomponent.order_id
            FROM public.technologies_barcodeoperationcomponent
           GROUP BY technologies_barcodeoperationcomponent.order_id
+        ), tracking_records AS (
+         SELECT string_agg((b.number)::text, ','::text) AS producedbatch,
+            advancedgenealogy_trackingrecord.order_id
+           FROM (public.advancedgenealogy_trackingrecord
+             JOIN public.advancedgenealogy_batch b ON ((b.id = advancedgenealogy_trackingrecord.producedbatch_id)))
+          GROUP BY advancedgenealogy_trackingrecord.order_id
         )
  SELECT ordersorder.id,
     ordersorder.active,
@@ -24209,8 +24227,9 @@ CREATE VIEW public.orders_orderplanninglistdto AS
             WHEN (ordersorder.root_id IS NULL) THEN (masterorder.deadline)::date
             ELSE (rootmasterorder.deadline)::date
         END AS clientdate,
-    tpl.standardperformance AS performancenorm
-   FROM (((((((((((((((((public.orders_order ordersorder
+    tpl.standardperformance AS performancenorm,
+    tr.producedbatch
+   FROM ((((((((((((((((((public.orders_order ordersorder
      JOIN public.basic_product product ON ((product.id = ordersorder.product_id)))
      LEFT JOIN public.basic_assortment assortment ON ((assortment.id = product.assortment_id)))
      LEFT JOIN public.basic_size size ON ((size.id = product.size_id)))
@@ -24227,7 +24246,8 @@ CREATE VIEW public.orders_orderplanninglistdto AS
      LEFT JOIN order_packs packs ON ((packs.orderid = ordersorder.id)))
      LEFT JOIN public.orders_orderstatechange orderstatechange ON (((orderstatechange.order_id = ordersorder.id) AND ((orderstatechange.status)::text = '03successful'::text) AND (orderstatechange.sourcestate IS NULL) AND ((orderstatechange.targetstate)::text = '01pending'::text))))
      LEFT JOIN public.masterorders_salesplan salesplan ON ((salesplan.id = ordersorder.salesplan_id)))
-     LEFT JOIN public.technologies_technologyproductionline tpl ON (((tpl.technology_id = ordersorder.technology_id) AND (tpl.productionline_id = ordersorder.productionline_id))));
+     LEFT JOIN public.technologies_technologyproductionline tpl ON (((tpl.technology_id = ordersorder.technology_id) AND (tpl.productionline_id = ordersorder.productionline_id))))
+     LEFT JOIN tracking_records tr ON ((tr.order_id = ordersorder.id)));
 
 
 --
@@ -28478,8 +28498,9 @@ CREATE VIEW public.productioncounting_productiontrackingdto AS
     productiontracking.shiftstartday,
     productiontracking.createuser,
     workstation.number AS workstationnumber,
-    productiontracking.comments
-   FROM (((((((((((((((((public.productioncounting_productiontracking productiontracking
+    productiontracking.comments,
+    b.number AS producedbatch
+   FROM ((((((((((((((((((public.productioncounting_productiontracking productiontracking
      JOIN public.orders_order ordersorder ON ((ordersorder.id = productiontracking.order_id)))
      JOIN public.basic_product product ON ((ordersorder.product_id = product.id)))
      JOIN public.productionlines_productionline productionline ON ((productionline.id = ordersorder.productionline_id)))
@@ -28496,7 +28517,8 @@ CREATE VIEW public.productioncounting_productiontrackingdto AS
      LEFT JOIN public.basic_company company ON ((company.id = ordersorder.company_id)))
      LEFT JOIN public.basicproductioncounting_productioncountingquantity pcq ON (((pcq.order_id = ordersorder.id) AND (pcq.technologyoperationcomponent_id = technologyoperationcomponent.id) AND ((pcq.typeofmaterial)::text = ANY (ARRAY[('02intermediate'::character varying)::text, ('03finalProduct'::character varying)::text])) AND ((pcq.role)::text = '02produced'::text))))
      LEFT JOIN public.basic_product outproduct ON ((pcq.product_id = outproduct.id)))
-     LEFT JOIN public.productioncounting_trackingoperationproductoutcomponent outcomponent ON ((((outcomponent.product_id = outproduct.id) OR (outcomponent.product_id = product.id)) AND (productiontracking.id = outcomponent.productiontracking_id))));
+     LEFT JOIN public.productioncounting_trackingoperationproductoutcomponent outcomponent ON ((((outcomponent.product_id = outproduct.id) OR (outcomponent.product_id = product.id)) AND (productiontracking.id = outcomponent.productiontracking_id))))
+     LEFT JOIN public.advancedgenealogy_batch b ON ((b.id = productiontracking.batch_id)));
 
 
 --
@@ -38862,7 +38884,7 @@ COPY public.arch_masterorders_masterorder (id, number, name, description, extern
 -- Data for Name: arch_masterorders_masterorderproduct; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_masterorders_masterorderproduct (id, product_id, technology_id, masterorder_id, masterorderquantity, cumulatedorderquantity, producedorderquantity, entityversion, lefttorelease, comments, masterorderpositionstatus, quantitytakenfromwarehouse, quantityremainingtoorder, deliverydate, line, vendorinfo, vendorso, price, priceslistprice, releasequantity, quantitytorelease, archived) FROM stdin;
+COPY public.arch_masterorders_masterorderproduct (id, product_id, technology_id, masterorder_id, masterorderquantity, cumulatedorderquantity, producedorderquantity, entityversion, lefttorelease, comments, masterorderpositionstatus, quantitytakenfromwarehouse, quantityremainingtoorder, deliverydate, line, vendorinfo, vendorso, price, priceslistprice, releasequantity, quantitytorelease, ordercategory, archived) FROM stdin;
 \.
 
 
@@ -43443,7 +43465,7 @@ COPY public.masterorders_masterorderdefinition (id, number, name, parameter_id, 
 -- Data for Name: masterorders_masterorderproduct; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.masterorders_masterorderproduct (id, product_id, technology_id, masterorder_id, masterorderquantity, cumulatedorderquantity, producedorderquantity, entityversion, lefttorelease, comments, masterorderpositionstatus, quantitytakenfromwarehouse, quantityremainingtoorder, deliverydate, line, vendorinfo, vendorso, price, priceslistprice, releasequantity, quantitytorelease) FROM stdin;
+COPY public.masterorders_masterorderproduct (id, product_id, technology_id, masterorder_id, masterorderquantity, cumulatedorderquantity, producedorderquantity, entityversion, lefttorelease, comments, masterorderpositionstatus, quantitytakenfromwarehouse, quantityremainingtoorder, deliverydate, line, vendorinfo, vendorso, price, priceslistprice, releasequantity, quantitytorelease, ordercategory) FROM stdin;
 \.
 
 

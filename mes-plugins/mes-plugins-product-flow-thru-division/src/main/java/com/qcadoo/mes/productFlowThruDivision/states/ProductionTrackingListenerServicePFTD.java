@@ -32,6 +32,7 @@ import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
+import com.qcadoo.mes.materialFlowResources.exceptions.DocumentBuildException;
 import com.qcadoo.mes.materialFlowResources.service.DocumentBuilder;
 import com.qcadoo.mes.materialFlowResources.service.DocumentManagementService;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -231,9 +232,14 @@ public final class ProductionTrackingListenerServicePFTD {
 
         for (Long locationId : groupedRecordInProducts.keySet()) {
             Entity locationFrom = getLocationDD().get(locationId);
-            Entity outboundDocument = createInternalOutboundDocumentForComponents(locationFrom, order,
-                    groupedRecordInProducts.get(locationId), productionTracking.getBelongsToField(L_USER));
-
+            Entity outboundDocument;
+            try {
+                outboundDocument = createInternalOutboundDocumentForComponents(locationFrom, order,
+                        groupedRecordInProducts.get(locationId), productionTracking.getBelongsToField(L_USER));
+            } catch (DocumentBuildException exc) {
+                exc.getGlobalErrors().forEach(e -> productionTracking.addGlobalError(e.getMessage(), e.getVars()));
+                return true;
+            }
             if (Objects.nonNull(outboundDocument) && !outboundDocument.isValid()) {
                 for (ErrorMessage error : outboundDocument.getGlobalErrors()) {
                     if (error.getMessage().equalsIgnoreCase(L_ERROR_NOT_ENOUGH_RESOURCES)) {

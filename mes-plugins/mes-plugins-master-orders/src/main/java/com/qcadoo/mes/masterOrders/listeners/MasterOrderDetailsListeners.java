@@ -319,7 +319,7 @@ public class MasterOrderDetailsListeners {
             SearchCriteriaBuilder scb = dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER,
                             MasterOrdersConstants.MODEL_PRICES_LIST).find().add(SearchRestrictions.belongsTo(PricesListFields.PRODUCT, product))
                     .add(SearchRestrictions.le(PricesListFields.DATE_FROM, date))
-                    .add(SearchRestrictions.or(SearchRestrictions.gt(PricesListFields.DATE_TO, date), SearchRestrictions.isNull(PricesListFields.DATE_TO))).setMaxResults(1);
+                    .add(SearchRestrictions.or(SearchRestrictions.ge(PricesListFields.DATE_TO, date), SearchRestrictions.isNull(PricesListFields.DATE_TO))).setMaxResults(1);
             Entity pricesList = scb.uniqueResult();
             if (pricesList != null) {
                 masterOrderProduct.setField(MasterOrderProductFields.PRICE, pricesList.getDecimalField(PricesListFields.PRICE));

@@ -112,6 +112,7 @@
         <boolean name="isUpdateTechnologiesOnPendingOrders" persistent="false" default="false"/>
         <datetime name="deliveryDate"/>
         <string name="vendorInfo"/>
+        <dictionary name="orderCategory" dictionary="orderCategory"/>
     </fields>
 
     <hooks>
