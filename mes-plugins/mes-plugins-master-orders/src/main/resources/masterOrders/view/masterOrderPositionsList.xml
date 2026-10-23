@@ -178,7 +178,7 @@
 
             <option type="footerRow" value="true"/>
             <option type="columnsToSummary"
-                    value="masterOrderQuantity,cumulatedMasterOrderQuantity,producedOrderQuantity,leftToRelease,quantityRemainingToOrder,quantityTakenFromWarehouse"/>
+                    value="masterOrderQuantity,cumulatedMasterOrderQuantity,producedOrderQuantity,leftToRelease,quantityRemainingToOrder,quantityTakenFromWarehouse,releaseQuantity"/>
 
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>
