@@ -56,6 +56,7 @@
 
         <boolean name="stocktakingUseNominalCostPriceNotSpecified" default="false"/>
         <boolean name="suggestShippingDate" default="false"/>
+        <boolean name="markHighStorageLocationsOnOrderPrintout" default="false"/>
     </fields>
 
     <hooks/>

@@ -43,7 +43,7 @@
         <windowTab name="mainTab">
             <component type="form" name="documentPositionParameters" reference="form">
                 <component type="gridLayout" name="documentPositionParametersGridLayout" reference="documentPositionParametersGridLayout"
-                           columns="3" rows="11">
+                           columns="3" rows="12">
                     <layoutElement column="1" row="1">
                         <component type="checkbox" name="suggestResource" field="suggestResource" reference="suggestResource">
                             <option type="labelWidth" value="60" />
@@ -52,6 +52,12 @@
                     <layoutElement column="1" row="2">
                         <component type="checkbox" name="acceptanceOfDocumentBeforePrinting" field="acceptanceOfDocumentBeforePrinting"
                                    reference="acceptanceOfDocumentBeforePrinting" hasDescription="true">
+                            <option type="labelWidth" value="60" />
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="3">
+                        <component type="checkbox" name="markHighStorageLocationsOnOrderPrintout" field="markHighStorageLocationsOnOrderPrintout"
+                                   reference="markHighStorageLocationsOnOrderPrintout" hasDescription="true">
                             <option type="labelWidth" value="60" />
                         </component>
                     </layoutElement>
@@ -81,7 +87,7 @@
                             <option type="labelWidth" value="60" />
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="3" width="3" height="9">
+                    <layoutElement column="1" row="4" width="3" height="9">
                         <component type="grid" name="grid" reference="grid" source="#{form}.items">
                             <option type="column" name="name" fields="name" link="true"/>
                             <option type="column" name="checked" fields="checked" width="50"/>

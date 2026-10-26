@@ -50,5 +50,6 @@ public final class DocumentPositionParametersFields {
     public static final String SHORT_EXPIRY_DATE = "shortExpiryDate";
 
     public static final String SUGGEST_SHIPPING_DATE = "suggestShippingDate";
+    public static final String MARK_HIGH_STORAGE_LOCATIONS_ON_ORDER_PRINTOUT = "markHighStorageLocationsOnOrderPrintout";
 
 }

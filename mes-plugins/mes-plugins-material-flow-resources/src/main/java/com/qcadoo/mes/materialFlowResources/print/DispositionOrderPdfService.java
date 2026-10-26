@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -27,20 +27,17 @@ import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.lowagie.text.*;
+import com.lowagie.text.pdf.GrayColor;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
-import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
+import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.mes.materialFlowResources.print.helper.*;
 import com.qcadoo.mes.materialFlowResources.print.helper.DocumentPdfHelper.HeaderPair;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.FontUtils;
@@ -84,6 +81,9 @@ public class DispositionOrderPdfService extends PdfDocumentService {
 
     @Autowired
     private MaterialFlowResourcesService materialFlowResourcesService;
+
+    @Autowired
+    private ParameterService parameterService;
 
     private String getDocumentHeader(final Entity document, final Locale locale) {
         return translationService.translate(L_HEADER, locale, document.getStringField(DocumentFields.NUMBER));
@@ -160,11 +160,16 @@ public class DispositionOrderPdfService extends PdfDocumentService {
 
         positions.sort((p1, p2) -> ComparisonChain.start().compare(p1.getStorageLocation(), p2.getStorageLocation()).result());
 
-        Integer index = 1;
+        int index = 1;
 
+        boolean markHighStorageLocationsOnOrderPrintout = parameterService.getParameter().getBelongsToField(ParameterFieldsMFR.DOCUMENT_POSITION_PARAMETERS).getBooleanField(DocumentPositionParametersFields.MARK_HIGH_STORAGE_LOCATIONS_ON_ORDER_PRINTOUT);
         for (Position position : positions) {
-            positionsTable.addCell(createCell(index.toString(), Element.ALIGN_LEFT));
-            positionsTable.addCell(createCell(position.getStorageLocation(), Element.ALIGN_LEFT));
+            positionsTable.addCell(createCell(Integer.toString(index), Element.ALIGN_LEFT));
+            PdfPCell storageLocationCell = createCell(position.getStorageLocation(), Element.ALIGN_LEFT);
+            if (markHighStorageLocationsOnOrderPrintout) {
+                storageLocationCell.setBackgroundColor(GrayColor.LIGHT_GRAY);
+            }
+            positionsTable.addCell(storageLocationCell);
             positionsTable.addCell(createCell(position.getPalletNumber(), Element.ALIGN_LEFT));
             positionsTable.addCell(createCell(position.getTypeOfLoadUnit(), Element.ALIGN_LEFT));
             positionsTable.addCell(createCell(position.getBatch(), Element.ALIGN_LEFT));
