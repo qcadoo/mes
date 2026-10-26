@@ -26,11 +26,9 @@ package com.qcadoo.mes.materialFlowResources.hooks;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.criteriaModifiers.AddressCriteriaModifiers;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.mes.materialFlowResources.service.ReservationsService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -44,6 +42,7 @@ import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -89,6 +88,9 @@ public class DocumentDetailsHooks {
 
     @Autowired
     private PluginManager pluginManager;
+
+    @Autowired
+    private ParameterService parameterService;
 
     public void onBeforeRender(final ViewDefinitionState view) {
         initializeDocument(view);
@@ -170,6 +172,11 @@ public class DocumentDetailsHooks {
         FieldComponent sendDateField = (FieldComponent) view.getComponentByReference(DocumentFields.SEND_DATE);
         sendDateField.setEnabled(DocumentType.RELEASE.getStringValue().equals(document.getStringField(DocumentFields.TYPE))
                 || DocumentType.TRANSFER.getStringValue().equals(document.getStringField(DocumentFields.TYPE)));
+        if (DocumentType.RELEASE.getStringValue().equals(document.getStringField(DocumentFields.TYPE))
+                && parameterService.getParameter().getBelongsToField(ParameterFieldsMFR.DOCUMENT_POSITION_PARAMETERS).getBooleanField(DocumentPositionParametersFields.SUGGEST_SHIPPING_DATE)
+                && Strings.isNullOrEmpty((String) sendDateField.getFieldValue())) {
+            sendDateField.setFieldValue(setDateToField(new DateTime().withTimeAtStartOfDay().toDate()));
+        }
 
         if (!positions.isEmpty()) {
             showWarehouse(view, false, false);
@@ -364,10 +371,8 @@ public class DocumentDetailsHooks {
         boolean isDispositionOrder = documentTypesWithDispositionOrder.contains(documentType);
         boolean isAdmission = documentTypesWithAdmission.contains(documentType);
 
-        if (isSaved) {
-            if (Objects.isNull(documentType) || !isDispositionOrder) {
-                errorMessage = "materialFlowResources.printDispositionOrderPdf.error";
-            }
+        if (isSaved && (Objects.isNull(documentType) || !isDispositionOrder)) {
+            errorMessage = "materialFlowResources.printDispositionOrderPdf.error";
         }
 
         printDispositionOrderPdfRibbonActionItem.setEnabled(isSaved && isDispositionOrder);

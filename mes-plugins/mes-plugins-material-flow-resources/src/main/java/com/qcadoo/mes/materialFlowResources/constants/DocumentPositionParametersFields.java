@@ -49,4 +49,6 @@ public final class DocumentPositionParametersFields {
 
     public static final String SHORT_EXPIRY_DATE = "shortExpiryDate";
 
+    public static final String SUGGEST_SHIPPING_DATE = "suggestShippingDate";
+
 }

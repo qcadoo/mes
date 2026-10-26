@@ -55,6 +55,7 @@
                     required="true" default="01nominal"/>
 
         <boolean name="stocktakingUseNominalCostPriceNotSpecified" default="false"/>
+        <boolean name="suggestShippingDate" default="false"/>
     </fields>
 
     <hooks/>
