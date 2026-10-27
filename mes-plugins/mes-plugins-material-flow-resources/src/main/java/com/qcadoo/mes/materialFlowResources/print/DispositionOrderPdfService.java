@@ -166,7 +166,7 @@ public class DispositionOrderPdfService extends PdfDocumentService {
         for (Position position : positions) {
             positionsTable.addCell(createCell(Integer.toString(index), Element.ALIGN_LEFT));
             PdfPCell storageLocationCell = createCell(position.getStorageLocation(), Element.ALIGN_LEFT);
-            if (markHighStorageLocationsOnOrderPrintout) {
+            if (markHighStorageLocationsOnOrderPrintout && position.isHighStorageLocation()) {
                 storageLocationCell.setBackgroundColor(GrayColor.LIGHT_GRAY);
             }
             positionsTable.addCell(storageLocationCell);
@@ -204,8 +204,11 @@ public class DispositionOrderPdfService extends PdfDocumentService {
         for (Entity position : positions) {
             PositionBuilder builder = new PositionBuilder();
 
+            Entity storageLocation = getStorageLocation(position);
+
             builder.setIndex(PositionDataProvider.index(position))
-                    .setStorageLocation(getDataForStorageLocation(position))
+                    .setStorageLocation(getDataForStorageLocation(storageLocation))
+                    .setHighStorageLocation(isHighStorageLocation(storageLocation))
                     .setPalletNumber(PositionDataProvider.palletNumber(position))
                     .setTypeOfLoadUnit(PositionDataProvider.typeOfLoadUnit(position))
                     .setProductName(getDataForProduct(position))
@@ -285,16 +288,24 @@ public class DispositionOrderPdfService extends PdfDocumentService {
         document.add(table);
     }
 
-    private String getDataForStorageLocation(final Entity position) {
+    private Entity getStorageLocation(final Entity position) {
         Entity storageLocation = position.getBelongsToField(PositionFields.STORAGE_LOCATION);
         Entity locationFrom = position.getBelongsToField(PositionFields.DOCUMENT).getBelongsToField(DocumentFields.LOCATION_FROM);
 
         if (Objects.isNull(storageLocation) && Objects.nonNull(locationFrom)) {
             storageLocation = materialFlowResourcesService.findStorageLocationForProduct(locationFrom, position.getBelongsToField(PositionFields.PRODUCT).getId()).orElse(null);
         }
+        return storageLocation;
+    }
 
+    private String getDataForStorageLocation(final Entity storageLocation) {
         return Objects.nonNull(storageLocation) ? storageLocation.getStringField(StorageLocationFields.NUMBER) : StringUtils.EMPTY;
     }
+
+    private boolean isHighStorageLocation(Entity storageLocation) {
+        return Objects.nonNull(storageLocation) && storageLocation.getBooleanField(StorageLocationFields.HIGH_STORAGE_LOCATION);
+    }
+
 
     private String getDataForProduct(final Entity position) {
         Entity product = position.getBelongsToField(PositionFields.PRODUCT);

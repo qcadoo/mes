@@ -170,8 +170,13 @@ public class DocumentDetailsHooks {
         }
 
         FieldComponent sendDateField = (FieldComponent) view.getComponentByReference(DocumentFields.SEND_DATE);
-        sendDateField.setEnabled(DocumentType.RELEASE.getStringValue().equals(document.getStringField(DocumentFields.TYPE))
-                || DocumentType.TRANSFER.getStringValue().equals(document.getStringField(DocumentFields.TYPE)));
+        if (DocumentType.RELEASE.getStringValue().equals(document.getStringField(DocumentFields.TYPE))
+                || DocumentType.TRANSFER.getStringValue().equals(document.getStringField(DocumentFields.TYPE))) {
+            sendDateField.setEnabled(true);
+        } else {
+            sendDateField.setEnabled(false);
+            sendDateField.setFieldValue(null);
+        }
         if (DocumentType.RELEASE.getStringValue().equals(document.getStringField(DocumentFields.TYPE))
                 && parameterService.getParameter().getBelongsToField(ParameterFieldsMFR.DOCUMENT_POSITION_PARAMETERS).getBooleanField(DocumentPositionParametersFields.SUGGEST_SHIPPING_DATE)
                 && Strings.isNullOrEmpty((String) sendDateField.getFieldValue())) {

@@ -12,6 +12,8 @@ public class Position {
 
     private String storageLocation;
 
+    private boolean highStorageLocation;
+
     private String typeOfLoadUnit;
 
     private String palletNumber;
@@ -26,7 +28,7 @@ public class Position {
 
     public Position(final String index, final Long product, final String storageLocation, final String typeOfLoadUnit,
                     final String palletNumber, final BigDecimal quantity, final String productName, final String unit,
-                    final String batch) {
+                    final String batch, final boolean highStorageLocation) {
         this.index = index;
         this.product = product;
         this.storageLocation = storageLocation;
@@ -36,6 +38,7 @@ public class Position {
         this.productName = productName;
         this.unit = unit;
         this.batch = batch;
+        this.highStorageLocation = highStorageLocation;
     }
 
     public void setQuantity(final BigDecimal quantity) {
@@ -78,6 +81,10 @@ public class Position {
         return batch;
     }
 
+    public boolean isHighStorageLocation() {
+        return highStorageLocation;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -92,12 +99,12 @@ public class Position {
 
         return Objects.equal(product, that.product) && Objects.equal(storageLocation, that.storageLocation)
                 && Objects.equal(typeOfLoadUnit, that.typeOfLoadUnit) && Objects.equal(palletNumber, that.palletNumber)
-                && Objects.equal(batch, that.batch);
+                && Objects.equal(batch, that.batch) && Objects.equal(highStorageLocation, that.highStorageLocation);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(product, storageLocation, typeOfLoadUnit, palletNumber, batch);
+        return Objects.hashCode(product, storageLocation, typeOfLoadUnit, palletNumber, batch, highStorageLocation);
     }
 
 }

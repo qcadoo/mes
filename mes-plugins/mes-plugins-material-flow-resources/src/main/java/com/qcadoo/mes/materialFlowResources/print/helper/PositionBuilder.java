@@ -9,6 +9,7 @@ public class PositionBuilder {
     private Long product;
 
     private String storageLocation;
+    private boolean highStorageLocation;
 
     private String typeOfLoadUnit;
 
@@ -34,6 +35,11 @@ public class PositionBuilder {
 
     public PositionBuilder setStorageLocation(final String storageLocation) {
         this.storageLocation = storageLocation;
+        return this;
+    }
+
+    public PositionBuilder setHighStorageLocation(final boolean highStorageLocation) {
+        this.highStorageLocation = highStorageLocation;
         return this;
     }
 
@@ -69,7 +75,7 @@ public class PositionBuilder {
 
     public Position createPosition() {
         return new Position(index, product, storageLocation, typeOfLoadUnit, palletNumber, quantity, productName,
-                unit, batch);
+                unit, batch, highStorageLocation);
     }
 
 }
