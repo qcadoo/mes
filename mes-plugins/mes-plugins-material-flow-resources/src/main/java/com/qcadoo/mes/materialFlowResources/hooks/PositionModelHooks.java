@@ -55,8 +55,7 @@ public class PositionModelHooks {
             reservationsService.updateReservationFromDocumentPosition(position);
         }
         if (position.isCopied() && !validateAvailableQuantity(position.getBelongsToField(PositionFields.DOCUMENT), position)) {
-            Entity resource = position.getBelongsToField(PositionFields.RESOURCE);
-            position.addError(positionDD.getField(PositionFields.QUANTITY), "documentPositions.error.position.quantity.notEnoughResources", position.getBelongsToField(PositionFields.PRODUCT).getStringField(ProductFields.NUMBER), resource != null ? resource.getStringField(ResourceFields.NUMBER) : "");
+            position.addError(positionDD.getField(PositionFields.QUANTITY), "materialFlowResources.stocktaking.document.quantity.notEnoughResources", position.getBelongsToField(PositionFields.PRODUCT).getStringField(ProductFields.NUMBER));
         }
     }
 
@@ -69,20 +68,10 @@ public class PositionModelHooks {
                 BigDecimal availableQuantity = getAvailableQuantityForProductAndLocation(
                         position.getBelongsToField(PositionFields.PRODUCT), location);
                 BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
-                if (availableQuantity == null || quantity.compareTo(availableQuantity) > 0) {
-                    return false;
-                } else if (Objects.nonNull(position.getBelongsToField(PositionFields.RESOURCE))) {
-                    BigDecimal resourceAvailableQuantity = getAvailableQuantityForResource(
-                            position.getBelongsToField(PositionFields.RESOURCE));
-                    return !Objects.isNull(resourceAvailableQuantity) && quantity.compareTo(resourceAvailableQuantity) <= 0;
-                }
+                return availableQuantity != null && quantity.compareTo(availableQuantity) <= 0;
             }
         }
         return true;
-    }
-
-    private BigDecimal getAvailableQuantityForResource(Entity resource) {
-        return resource.getDecimalField(ResourceFields.AVAILABLE_QUANTITY);
     }
 
     private BigDecimal getAvailableQuantityForProductAndLocation(Entity product, Entity location) {
