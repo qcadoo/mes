@@ -18,6 +18,7 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -55,10 +56,21 @@ public class ResourceDetailsHooks {
         materialFlowResourcesService.fillCurrencyFieldValues(view);
 
         fillUnitField(view, resource);
+        toggleConversion(view, resource);
         togglePriceFields(view);
 
         setStorageLocationLookupFilterValue(view, resource);
         setBatchLookupProductFilterValue(view, resource);
+    }
+
+    private void toggleConversion(ViewDefinitionState view, final Entity resource) {
+        FieldComponent conversionField = (FieldComponent) view.getComponentByReference(ResourceFields.CONVERSION);
+        Entity product = resource.getBelongsToField(ResourceFields.PRODUCT);
+        String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
+        if (StringUtils.isEmpty(additionalUnit)) {
+            conversionField.setEnabled(false);
+            conversionField.requestComponentUpdateState();
+        }
     }
 
     private void fillUnitField(final ViewDefinitionState view, final Entity resource) {
@@ -147,9 +159,13 @@ public class ResourceDetailsHooks {
 
             Entity resource = resourceForm.getEntity();
 
+            Entity product = resource.getBelongsToField(ResourceFields.PRODUCT);
+            String unit = product.getStringField(ProductFields.UNIT);
+            String additionalUnit = (String) additionalUnitField.getFieldValue();
+
+            BigDecimal conversion = materialFlowResourcesService.getConversion(product, unit, additionalUnit, resource.getDecimalField(ResourceFields.CONVERSION));
             BigDecimal newAdditionalQuantity = calculationQuantityService.calculateAdditionalQuantity(
-                    maybeQuantity.getRight().get(), resource.getDecimalField(ResourceFields.CONVERSION),
-                    (String) additionalUnitField.getFieldValue());
+                    maybeQuantity.getRight().get(), conversion, additionalUnit);
 
             String quantityInAdditionalUnitFormatted = numberService.format(newAdditionalQuantity);
 
@@ -174,11 +190,16 @@ public class ResourceDetailsHooks {
 
             Entity resource = resourceForm.getEntity();
 
-            BigDecimal conversion = resource.getDecimalField(ResourceFields.CONVERSION);
+            FieldComponent additionalUnitField = (FieldComponent) viewDefinitionState
+                    .getComponentByReference(ResourceFields.GIVEN_UNIT);
             Entity product = resource.getBelongsToField(ResourceFields.PRODUCT);
+            String unit = product.getStringField(ProductFields.UNIT);
+            String additionalUnit = (String) additionalUnitField.getFieldValue();
+
+            BigDecimal conversion = materialFlowResourcesService.getConversion(product, unit, additionalUnit, resource.getDecimalField(ResourceFields.CONVERSION));
 
             BigDecimal quantity = calculationQuantityService.calculateQuantity(maybeQuantityInAdditionalUnit.getRight().get(),
-                    conversion, product.getStringField(ProductFields.UNIT));
+                    conversion, unit);
 
             String quantityFormatted = numberService.format(numberService.setScaleWithDefaultMathContext(quantity));
 

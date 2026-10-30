@@ -126,6 +126,7 @@
                     <layoutElement column="1" row="7" width="5">
                         <component type="input" name="conversion" field="conversion"
                                    reference="conversion">
+                            <option type="alignment" value="right"/>
                             <listener event="onInputChange"
                                       class="com.qcadoo.mes.materialFlowResources.hooks.ResourceDetailsHooks"
                                       method="onConversionChange"/>
