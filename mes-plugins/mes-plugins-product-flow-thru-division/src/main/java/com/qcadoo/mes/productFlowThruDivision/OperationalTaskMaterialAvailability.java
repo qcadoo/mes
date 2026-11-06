@@ -13,7 +13,6 @@ import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuanti
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.orders.constants.OperationalTaskFields;
-import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productFlowThruDivision.constants.*;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.*;
@@ -45,7 +44,6 @@ public class OperationalTaskMaterialAvailability {
 
     public List<Entity> generateAndSaveMaterialAvailability(final Entity operationalTask) {
         Entity order = operationalTask.getBelongsToField(OperationalTaskFields.ORDER);
-        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
 
         deleteMaterialAvailability(operationalTask);
 
@@ -117,7 +115,7 @@ public class OperationalTaskMaterialAvailability {
             BigDecimal totalQuantity = BigDecimalUtils.convertNullToZero(intermediate.getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY));
             BigDecimal produced = BigDecimal.ZERO;
 
-            if(childIntermediate.isPresent()) {
+            if (childIntermediate.isPresent()) {
                 produced = BigDecimalUtils.convertNullToZero(childIntermediate.get().getDecimalField(ProductionCountingQuantityFields.PRODUCED_QUANTITY));
             }
 
@@ -330,7 +328,6 @@ public class OperationalTaskMaterialAvailability {
                 .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE,
                         ProductionCountingQuantityRole.PRODUCED.getStringValue())).list().getEntities();
     }
-
 
 
     private void saveMaterialAvailability(final List<Entity> materialsAvailability) {

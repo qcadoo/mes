@@ -51,6 +51,7 @@
         <datetime name="dateAndTime" />
         <string name="qualityCardNumber" />
         <boolean name="isTemplateAccepted"/>
+        <string name="worker" />
     </fields>
 
     <identifier expression="#number + ' - ' + #name"/>

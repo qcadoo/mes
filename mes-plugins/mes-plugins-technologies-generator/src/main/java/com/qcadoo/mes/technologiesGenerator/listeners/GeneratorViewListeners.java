@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo Framework
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -35,16 +35,16 @@ import com.qcadoo.mes.technologiesGenerator.domain.ContextId;
 import com.qcadoo.mes.technologiesGenerator.tree.TreeGenerator;
 import com.qcadoo.mes.technologiesGenerator.view.GeneratorView;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
-
-import java.util.Optional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class GeneratorViewListeners {
@@ -63,9 +63,12 @@ public class GeneratorViewListeners {
     @Autowired
     private ParameterService parameterService;
 
+    @Autowired
+    private SecurityService securityService;
+
     public void goToGeneratedTechnologies(final ViewDefinitionState view, final ComponentState eventPerformer, final String[] args) {
         GridComponent grid = (GridComponent) view.getComponentByReference("generatorTechnologiesForProducts");
-        if(!grid.getSelectedEntitiesIds().isEmpty()) {
+        if (!grid.getSelectedEntitiesIds().isEmpty()) {
             String url = "../page/technologies/technologyDetails.html";
             Entity e = grid.getSelectedEntities().get(0).getDataDefinition().get(grid.getSelectedEntities().get(0).getId());
 
@@ -75,12 +78,12 @@ public class GeneratorViewListeners {
 
     public void generateTechnologies(final ViewDefinitionState view, final ComponentState eventPerformer, final String[] args) {
         GeneratorView generatorView = GeneratorView.from(view);
-        Entity context  = generatorView.getFormEntity().getDataDefinition().get(generatorView.getFormEntity().getId());
+        Entity context = generatorView.getFormEntity().getDataDefinition().get(generatorView.getFormEntity().getId());
         context.setField(GeneratorContextFields.GENERATION_IN_PROGRSS, true);
         context = context.getDataDefinition().save(context);
         generatorView.setFormEntity(context);
         view.addMessage("generator.technology.generationTechnologyStart", ComponentState.MessageType.INFO, false);
-        technologiesGeneratorForProductsService.performGeneration(generatorView);
+        technologiesGeneratorForProductsService.performGeneration(generatorView, securityService.getCurrentUserName());
     }
 
     public void generateTree(final ViewDefinitionState view, final ComponentState eventPerformer, final String[] args) {
@@ -111,7 +114,7 @@ public class GeneratorViewListeners {
     }
 
     private Either<String, ContextId> performGeneration(final GeneratorView generatorView, final Entity savedContext,
-            boolean applyCustomized) {
+                                                        boolean applyCustomized) {
         Either<String, ContextId> generationRes = treeGenerator.generate(savedContext, GeneratorSettings.from(savedContext, parameterService.getParameter()), applyCustomized);
         if (generationRes.isRight()) {
             Entity updatedContext = savedContext.getDataDefinition().get(savedContext.getId());
@@ -144,10 +147,10 @@ public class GeneratorViewListeners {
 
     private Optional<Either<String, TechnologyId>> tryPerformCustomization(final GeneratorView generatorView, final Entity context) {
         try {
-            Optional<Either<String, TechnologyId>> customizedTechId =  Optional.ofNullable(context.getBelongsToField(GeneratorContextFields.PRODUCT)).flatMap(
+            Optional<Either<String, TechnologyId>> customizedTechId = Optional.ofNullable(context.getBelongsToField(GeneratorContextFields.PRODUCT)).flatMap(
                     mainProduct -> generatorView.getSelectedNodeId()
                             .flatMap(nodeId -> technologyCustomizer
-                                            .customize(nodeId, mainProduct, GeneratorSettings.from(context, parameterService.getParameter()), false)));
+                                    .customize(nodeId, mainProduct, GeneratorSettings.from(context, parameterService.getParameter()), false)));
             customizedTechId.ifPresent(cti -> {
                 if (cti.isRight()) {
                     TechnologyId technologyId = cti.getRight();
@@ -162,6 +165,5 @@ public class GeneratorViewListeners {
             return Optional.of(Either.left("Cannot perform technology customization due to unexpected error"));
         }
     }
-
 
 }

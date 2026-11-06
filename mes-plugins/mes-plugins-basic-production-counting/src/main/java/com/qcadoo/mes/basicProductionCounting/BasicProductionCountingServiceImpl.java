@@ -146,7 +146,6 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
 
     private boolean saveBasicProductionCounting(Entity order, final List<Entity> productionCountingQuantities,
                                                 final List<Entity> basicProductionCounting, final Entity orderProduct) {
-        boolean productToProductGroupTechnologyDoesntExists = false;
         Multimap<Long, Entity> productionCountingQuantitiesByProduct = ArrayListMultimap.create();
 
         for (Entity pCQ : productionCountingQuantities) {

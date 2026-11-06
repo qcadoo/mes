@@ -217,7 +217,7 @@
 
             <option type="footerRow" value="true"/>
             <option type="columnsToSummary"
-                    value="orderedPositionQuantity,commissionedPositionQuantity,quantityForCommission"/>
+                    value="orderedPositionQuantity,commissionedPositionQuantity,quantityForCommission,numberOfReleasedPositions"/>
 
             <option type="correspondingView" value="masterOrders/masterOrderDetails"/>
             <option type="correspondingComponent" value="form"/>

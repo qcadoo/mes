@@ -3944,6 +3944,7 @@ CREATE TABLE public.arch_basicproductioncounting_productioncountingquantity (
     producedquantity numeric(14,5),
     wastereceptionwarehouse_id bigint,
     attribute_id bigint,
+    orderrepacking_id bigint,
     archived boolean DEFAULT false
 );
 
@@ -5745,6 +5746,7 @@ CREATE TABLE public.arch_orders_order (
     optimizecuttingsolution text,
     vendorinfo character varying(255),
     priority integer DEFAULT 100,
+    wms boolean DEFAULT false,
     archived boolean DEFAULT false
 );
 
@@ -10749,7 +10751,8 @@ CREATE TABLE public.orders_order (
     additionalfinalproducts character varying(255),
     optimizecuttingsolution text,
     vendorinfo character varying(255),
-    priority integer DEFAULT 100
+    priority integer DEFAULT 100,
+    wms boolean DEFAULT false
 );
 
 
@@ -13076,7 +13079,8 @@ CREATE TABLE public.basicproductioncounting_productioncountingquantity (
     usedquantity numeric(14,5),
     producedquantity numeric(14,5),
     wastereceptionwarehouse_id bigint,
-    attribute_id bigint
+    attribute_id bigint,
+    orderrepacking_id bigint
 );
 
 
@@ -20881,7 +20885,9 @@ CREATE TABLE public.materialflowresources_documentpositionparameters (
     allowquantitychangeinmobile boolean DEFAULT false,
     removenotcompletedpositionsinmobile boolean DEFAULT false,
     outbounddocumentsscanningrequired character varying(255),
-    inbounddocumentsscanningrequired character varying(255)
+    inbounddocumentsscanningrequired character varying(255),
+    suggestshippingdate boolean DEFAULT false,
+    markhighstoragelocationsonorderprintout boolean DEFAULT false
 );
 
 
@@ -22742,6 +22748,38 @@ CREATE SEQUENCE public.mobilewms_materialrequirementpart_id_seq
 --
 
 ALTER SEQUENCE public.mobilewms_materialrequirementpart_id_seq OWNED BY public.mobilewms_materialrequirementpart.id;
+
+
+--
+-- Name: mobilewms_orderrepacking; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.mobilewms_orderrepacking (
+    id bigint NOT NULL,
+    stateinwms character varying(255),
+    pickingworker character varying(255),
+    order_id bigint,
+    location character varying(255)
+);
+
+
+--
+-- Name: mobilewms_orderrepacking_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.mobilewms_orderrepacking_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: mobilewms_orderrepacking_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.mobilewms_orderrepacking_id_seq OWNED BY public.mobilewms_orderrepacking.id;
 
 
 --
@@ -33057,6 +33095,7 @@ SELECT
     NULL::character varying(255) AS generatorname,
     NULL::boolean AS attachmentsexists,
     NULL::timestamp without time zone AS dateandtime,
+    NULL::character varying(255) AS worker,
     NULL::character varying(255) AS productionlinenumber,
     NULL::character varying(255) AS assortmentname,
     NULL::character varying(255) AS qualitycardnumber,
@@ -36819,6 +36858,13 @@ ALTER TABLE ONLY public.mobilewms_materialrequirementpart ALTER COLUMN id SET DE
 
 
 --
+-- Name: mobilewms_orderrepacking id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.mobilewms_orderrepacking ALTER COLUMN id SET DEFAULT nextval('public.mobilewms_orderrepacking_id_seq'::regclass);
+
+
+--
 -- Name: mobilewms_stocktakingpart id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -38636,7 +38682,7 @@ COPY public.arch_basicproductioncounting_productioncountingoperationrun (id, ord
 -- Data for Name: arch_basicproductioncounting_productioncountingquantity; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_basicproductioncounting_productioncountingquantity (id, order_id, product_id, plannedquantity, isnoncomponent, technologyoperationcomponent_id, basicproductioncounting_id, typeofmaterial, role, componentsoutputlocation_id, componentslocation_id, productsinputlocation_id, productionflow, productsflowlocation_id, entityversion, replacementto_id, showmaterialcomponentinworkplan, technologyinputproducttype_id, usedquantity, producedquantity, wastereceptionwarehouse_id, attribute_id, archived) FROM stdin;
+COPY public.arch_basicproductioncounting_productioncountingquantity (id, order_id, product_id, plannedquantity, isnoncomponent, technologyoperationcomponent_id, basicproductioncounting_id, typeofmaterial, role, componentsoutputlocation_id, componentslocation_id, productsinputlocation_id, productionflow, productsflowlocation_id, entityversion, replacementto_id, showmaterialcomponentinworkplan, technologyinputproducttype_id, usedquantity, producedquantity, wastereceptionwarehouse_id, attribute_id, orderrepacking_id, archived) FROM stdin;
 \.
 
 
@@ -39004,7 +39050,7 @@ COPY public.arch_orders_operationaltaskstatechange (id, dateandtime, sourcestate
 -- Data for Name: arch_orders_order; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_orders_order (id, number, name, description, commentreasontypecorrectiondatefrom, commentreasontypecorrectiondateto, commentreasondeviationeffectivestart, commentreasondeviationeffectiveend, externalnumber, commentreasontypedeviationsquantity, datefrom, dateto, effectivedatefrom, effectivedateto, deadline, correcteddatefrom, correcteddateto, startdate, finishdate, state, company_id, product_id, technology_id, productionline_id, plannedquantity, donequantity, externalsynchronized, commissionedplannedquantity, commissionedcorrectedquantity, amountofproductproduced, remainingamountofproducttoproduce, ownlinechangeoverduration, registerproductiontime, registerquantityinproduct, laborworktime, includetpz, inputproductsrequiredfortype, generatedenddate, machineworktime, ownlinechangeover, registerquantityoutproduct, operationdurationquantityunit, realizationtime, calculate, includeadditionaltime, typeofproductionrecording, masterorder_id, active, productpriceperunit, failuresyncmessage, targetstate, ignorerequiredcomponents, automaticallymoveoverusage, updatecomponentsavailability, technologyprototype_id, level, parent_id, ignoremissingcomponents, masterorderproduct_id, dateschanged, sourcecorrecteddatefrom, sourcecorrecteddateto, sourcestartdate, sourcefinishdate, batchnumber, root_id, includeordersforcomponent, plannedfinishallorders, plannedstartallorders, calculatedfinishallorders, registerfilled, workplandelivered, calculatedstartallorders, scadacreatedorupdatestate, entityversion, workertochange, masterorderproductcomponent_id, wastesquantity, existsrepairorders, ordercategory, address_id, finalproductiontracking, updatefinishdate, ordersgroup_id, plannedquantityforadditionalunit, division_id, salesplan_id, reportedproductionquantity, expirationdate, additionalfinalproducts, optimizecuttingsolution, vendorinfo, priority, archived) FROM stdin;
+COPY public.arch_orders_order (id, number, name, description, commentreasontypecorrectiondatefrom, commentreasontypecorrectiondateto, commentreasondeviationeffectivestart, commentreasondeviationeffectiveend, externalnumber, commentreasontypedeviationsquantity, datefrom, dateto, effectivedatefrom, effectivedateto, deadline, correcteddatefrom, correcteddateto, startdate, finishdate, state, company_id, product_id, technology_id, productionline_id, plannedquantity, donequantity, externalsynchronized, commissionedplannedquantity, commissionedcorrectedquantity, amountofproductproduced, remainingamountofproducttoproduce, ownlinechangeoverduration, registerproductiontime, registerquantityinproduct, laborworktime, includetpz, inputproductsrequiredfortype, generatedenddate, machineworktime, ownlinechangeover, registerquantityoutproduct, operationdurationquantityunit, realizationtime, calculate, includeadditionaltime, typeofproductionrecording, masterorder_id, active, productpriceperunit, failuresyncmessage, targetstate, ignorerequiredcomponents, automaticallymoveoverusage, updatecomponentsavailability, technologyprototype_id, level, parent_id, ignoremissingcomponents, masterorderproduct_id, dateschanged, sourcecorrecteddatefrom, sourcecorrecteddateto, sourcestartdate, sourcefinishdate, batchnumber, root_id, includeordersforcomponent, plannedfinishallorders, plannedstartallorders, calculatedfinishallorders, registerfilled, workplandelivered, calculatedstartallorders, scadacreatedorupdatestate, entityversion, workertochange, masterorderproductcomponent_id, wastesquantity, existsrepairorders, ordercategory, address_id, finalproductiontracking, updatefinishdate, ordersgroup_id, plannedquantityforadditionalunit, division_id, salesplan_id, reportedproductionquantity, expirationdate, additionalfinalproducts, optimizecuttingsolution, vendorinfo, priority, wms, archived) FROM stdin;
 \.
 
 
@@ -40524,7 +40570,7 @@ COPY public.basicproductioncounting_productioncountingoperationrun (id, order_id
 -- Data for Name: basicproductioncounting_productioncountingquantity; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.basicproductioncounting_productioncountingquantity (id, order_id, product_id, plannedquantity, isnoncomponent, technologyoperationcomponent_id, basicproductioncounting_id, typeofmaterial, role, componentsoutputlocation_id, componentslocation_id, productsinputlocation_id, productionflow, productsflowlocation_id, entityversion, replacementto_id, showmaterialcomponentinworkplan, technologyinputproducttype_id, usedquantity, producedquantity, wastereceptionwarehouse_id, attribute_id) FROM stdin;
+COPY public.basicproductioncounting_productioncountingquantity (id, order_id, product_id, plannedquantity, isnoncomponent, technologyoperationcomponent_id, basicproductioncounting_id, typeofmaterial, role, componentsoutputlocation_id, componentslocation_id, productsinputlocation_id, productionflow, productsflowlocation_id, entityversion, replacementto_id, showmaterialcomponentinworkplan, technologyinputproducttype_id, usedquantity, producedquantity, wastereceptionwarehouse_id, attribute_id, orderrepacking_id) FROM stdin;
 \.
 
 
@@ -43706,8 +43752,8 @@ COPY public.materialflowresources_document (id, number, type, "time", state, loc
 -- Data for Name: materialflowresources_documentpositionparameters; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.materialflowresources_documentpositionparameters (id, suggestresource, acceptanceofdocumentbeforeprinting, notshowprices, presenttotalamountandrest, pallettoshift, palletwithfreeplace, fillresourceirrespectiveofconversion, numberofmonthsforpositionsdata, colorresourcesafterdeadline, shortexpirydate, runningoutofstockdays, stocktakingmaterialcostsused, stocktakingusenominalcostpricenotspecified, hidestocktakingstock, hidestocktakingpositions, acceptdocumentrealizedinmobile, allowquantitychangeinmobile, removenotcompletedpositionsinmobile, outbounddocumentsscanningrequired, inbounddocumentsscanningrequired) FROM stdin;
-1	f	t	f	f	\N	\N	f	1	f	14	0	01nominal	f	f	f	f	f	f	\N	\N
+COPY public.materialflowresources_documentpositionparameters (id, suggestresource, acceptanceofdocumentbeforeprinting, notshowprices, presenttotalamountandrest, pallettoshift, palletwithfreeplace, fillresourceirrespectiveofconversion, numberofmonthsforpositionsdata, colorresourcesafterdeadline, shortexpirydate, runningoutofstockdays, stocktakingmaterialcostsused, stocktakingusenominalcostpricenotspecified, hidestocktakingstock, hidestocktakingpositions, acceptdocumentrealizedinmobile, allowquantitychangeinmobile, removenotcompletedpositionsinmobile, outbounddocumentsscanningrequired, inbounddocumentsscanningrequired, suggestshippingdate, markhighstoragelocationsonorderprintout) FROM stdin;
+1	f	t	f	f	\N	\N	f	1	f	14	0	01nominal	f	f	f	f	f	f	\N	\N	f	f
 \.
 
 
@@ -44017,6 +44063,14 @@ COPY public.mobilewms_materialrequirementpart (id, number, name, part, parts, st
 
 
 --
+-- Data for Name: mobilewms_orderrepacking; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.mobilewms_orderrepacking (id, stateinwms, pickingworker, order_id, location) FROM stdin;
+\.
+
+
+--
 -- Data for Name: mobilewms_stocktakingpart; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -44132,7 +44186,7 @@ COPY public.orders_operationaltaskstatechange (id, dateandtime, sourcestate, tar
 -- Data for Name: orders_order; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.orders_order (id, number, name, description, commentreasontypecorrectiondatefrom, commentreasontypecorrectiondateto, commentreasondeviationeffectivestart, commentreasondeviationeffectiveend, externalnumber, commentreasontypedeviationsquantity, datefrom, dateto, effectivedatefrom, effectivedateto, deadline, correcteddatefrom, correcteddateto, startdate, finishdate, state, company_id, product_id, technology_id, productionline_id, plannedquantity, donequantity, externalsynchronized, commissionedplannedquantity, commissionedcorrectedquantity, amountofproductproduced, remainingamountofproducttoproduce, ownlinechangeoverduration, registerproductiontime, registerquantityinproduct, laborworktime, includetpz, inputproductsrequiredfortype, generatedenddate, machineworktime, ownlinechangeover, registerquantityoutproduct, operationdurationquantityunit, realizationtime, calculate, includeadditionaltime, typeofproductionrecording, masterorder_id, active, productpriceperunit, failuresyncmessage, targetstate, ignorerequiredcomponents, automaticallymoveoverusage, updatecomponentsavailability, technologyprototype_id, level, parent_id, ignoremissingcomponents, masterorderproduct_id, dateschanged, sourcecorrecteddatefrom, sourcecorrecteddateto, sourcestartdate, sourcefinishdate, batchnumber, root_id, includeordersforcomponent, plannedfinishallorders, plannedstartallorders, calculatedfinishallorders, registerfilled, workplandelivered, calculatedstartallorders, scadacreatedorupdatestate, entityversion, workertochange, masterorderproductcomponent_id, wastesquantity, existsrepairorders, ordercategory, address_id, finalproductiontracking, updatefinishdate, ordersgroup_id, plannedquantityforadditionalunit, division_id, salesplan_id, reportedproductionquantity, expirationdate, additionalfinalproducts, optimizecuttingsolution, vendorinfo, priority) FROM stdin;
+COPY public.orders_order (id, number, name, description, commentreasontypecorrectiondatefrom, commentreasontypecorrectiondateto, commentreasondeviationeffectivestart, commentreasondeviationeffectiveend, externalnumber, commentreasontypedeviationsquantity, datefrom, dateto, effectivedatefrom, effectivedateto, deadline, correcteddatefrom, correcteddateto, startdate, finishdate, state, company_id, product_id, technology_id, productionline_id, plannedquantity, donequantity, externalsynchronized, commissionedplannedquantity, commissionedcorrectedquantity, amountofproductproduced, remainingamountofproducttoproduce, ownlinechangeoverduration, registerproductiontime, registerquantityinproduct, laborworktime, includetpz, inputproductsrequiredfortype, generatedenddate, machineworktime, ownlinechangeover, registerquantityoutproduct, operationdurationquantityunit, realizationtime, calculate, includeadditionaltime, typeofproductionrecording, masterorder_id, active, productpriceperunit, failuresyncmessage, targetstate, ignorerequiredcomponents, automaticallymoveoverusage, updatecomponentsavailability, technologyprototype_id, level, parent_id, ignoremissingcomponents, masterorderproduct_id, dateschanged, sourcecorrecteddatefrom, sourcecorrecteddateto, sourcestartdate, sourcefinishdate, batchnumber, root_id, includeordersforcomponent, plannedfinishallorders, plannedstartallorders, calculatedfinishallorders, registerfilled, workplandelivered, calculatedstartallorders, scadacreatedorupdatestate, entityversion, workertochange, masterorderproductcomponent_id, wastesquantity, existsrepairorders, ordercategory, address_id, finalproductiontracking, updatefinishdate, ordersgroup_id, plannedquantityforadditionalunit, division_id, salesplan_id, reportedproductionquantity, expirationdate, additionalfinalproducts, optimizecuttingsolution, vendorinfo, priority, wms) FROM stdin;
 \.
 
 
@@ -50057,6 +50111,13 @@ SELECT pg_catalog.setval('public.mobilewms_materialrequirementpart_id_seq', 1, f
 
 
 --
+-- Name: mobilewms_orderrepacking_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.mobilewms_orderrepacking_id_seq', 1, false);
+
+
+--
 -- Name: mobilewms_stocktakingpart_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -55937,6 +55998,14 @@ ALTER TABLE ONLY public.mobilewms_materialrequirementpart
 
 
 --
+-- Name: mobilewms_orderrepacking mobilewms_orderrepacking_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.mobilewms_orderrepacking
+    ADD CONSTRAINT mobilewms_orderrepacking_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: mobilewms_stocktakingpart mobilewms_stocktakingpart_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -60268,6 +60337,7 @@ CREATE OR REPLACE VIEW public.technologies_technologydto AS
     generatorcontext.number AS generatorname,
     (count(technologyattachment.id) <> 0) AS attachmentsexists,
     technologystatechange.dateandtime,
+    technologystatechange.worker,
     productionline.number AS productionlinenumber,
     assortment.name AS assortmentname,
     qualitycard.number AS qualitycardnumber,
@@ -60283,7 +60353,7 @@ CREATE OR REPLACE VIEW public.technologies_technologydto AS
      LEFT JOIN public.basic_qualitycard qualitycard ON ((qualitycard.id = technology.qualitycard_id)))
      LEFT JOIN public.technologies_technologyproductionline tpl ON (((tpl.technology_id = technology.id) AND tpl.master)))
      LEFT JOIN public.productionlines_productionline productionline ON ((productionline.id = tpl.productionline_id)))
-  GROUP BY technology.id, product.number, product.globaltypeofmaterial, technologygroup.number, division.name, product.name, generatorcontext.number, technologystatechange.dateandtime, tpl.standardperformance, productionline.number, assortment.name, qualitycard.number;
+  GROUP BY technology.id, product.number, product.globaltypeofmaterial, technologygroup.number, division.name, product.name, generatorcontext.number, technologystatechange.dateandtime, technologystatechange.worker, tpl.standardperformance, productionline.number, assortment.name, qualitycard.number;
 
 
 --
@@ -64711,6 +64781,14 @@ ALTER TABLE ONLY public.productflowthrudivision_orderproductresourcereservation
 
 
 --
+-- Name: mobilewms_orderrepacking orderrepacking_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.mobilewms_orderrepacking
+    ADD CONSTRAINT orderrepacking_order_fkey FOREIGN KEY (order_id) REFERENCES public.orders_order(id) DEFERRABLE;
+
+
+--
 -- Name: goodfood_confectionprotocol orders_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -66596,6 +66674,14 @@ ALTER TABLE ONLY public.basicproductioncounting_productioncountingquantity
 
 ALTER TABLE ONLY public.basicproductioncounting_productioncountingquantity
     ADD CONSTRAINT productioncountingquantity_order_fkey FOREIGN KEY (order_id) REFERENCES public.orders_order(id) DEFERRABLE;
+
+
+--
+-- Name: basicproductioncounting_productioncountingquantity productioncountingquantity_orderrepacking_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.basicproductioncounting_productioncountingquantity
+    ADD CONSTRAINT productioncountingquantity_orderrepacking_fkey FOREIGN KEY (orderrepacking_id) REFERENCES public.mobilewms_orderrepacking(id) DEFERRABLE;
 
 
 --

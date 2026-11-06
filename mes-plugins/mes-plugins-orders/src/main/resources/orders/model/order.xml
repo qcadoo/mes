@@ -207,6 +207,7 @@
             <validatesRange from="0"/>
         </integer>
         <string name="vendorInfo" copyable="false"/>
+        <boolean name="wms" copyable="false" default="false"/>
     </fields>
 
     <hooks>

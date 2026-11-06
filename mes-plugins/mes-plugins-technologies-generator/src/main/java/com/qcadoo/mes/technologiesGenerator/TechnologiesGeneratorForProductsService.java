@@ -5,9 +5,12 @@ import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.technologies.TechnologyNameAndNumberGenerator;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.dataProvider.TechnologyDataProvider;
 import com.qcadoo.mes.technologies.domain.TechnologyId;
+import com.qcadoo.mes.technologies.states.constants.TechnologyStateChangeFields;
+import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
 import com.qcadoo.mes.technologiesGenerator.constants.GeneratorContextFields;
 import com.qcadoo.mes.technologiesGenerator.constants.GeneratorTreeNodeFields;
 import com.qcadoo.mes.technologiesGenerator.constants.ProductFieldsTG;
@@ -23,10 +26,7 @@ import com.qcadoo.mes.technologiesGenerator.view.GeneratorView;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-
-import java.util.List;
-import java.util.Optional;
-
+import com.qcadoo.model.api.search.SearchRestrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +35,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TechnologiesGeneratorForProductsService {
@@ -69,7 +72,7 @@ public class TechnologiesGeneratorForProductsService {
     private ParameterService parameterService;
 
     @Async
-    public void performGeneration(final GeneratorView generatorView) {
+    public void performGeneration(final GeneratorView generatorView, String currentUserName) {
         LOG.info(String.format("Start generation technologies for products. Generator name : %S", generatorView.getFormEntity()
                 .getStringField(GeneratorContextFields.NAME)));
 
@@ -79,7 +82,7 @@ public class TechnologiesGeneratorForProductsService {
             Optional<List<Entity>> optionalNodes = nodeDataProvider.getCastumizedNodesForContext(context);
             if (optionalNodes.isPresent() && !optionalNodes.get().isEmpty()) {
                 final Entity finalContext = context;
-                products.forEach(pr -> performGenerationTechnologyForProduct(pr, optionalNodes.get(), generatorView, finalContext));
+                products.forEach(pr -> performGenerationTechnologyForProduct(pr, optionalNodes.get(), generatorView, finalContext, currentUserName));
             }
         } catch (Exception ex) {
             LOG.warn("An error occurred while generating technology", ex);
@@ -99,20 +102,20 @@ public class TechnologiesGeneratorForProductsService {
     }
 
     private void performGenerationTechnologyForProduct(final Entity product, final List<Entity> nodes,
-            final GeneratorView generatorView, final Entity context) {
-        preformForProduct(product, nodes, generatorView, context);
+                                                       final GeneratorView generatorView, final Entity context, String currentUserName) {
+        preformForProduct(product, nodes, generatorView, context, currentUserName);
     }
 
-    private void preformForProduct(Entity product, List<Entity> nodes, GeneratorView generatorView, Entity context) {
-        nodes.forEach(node -> customizeTechnologyForNode(node, product, generatorView, context));
+    private void preformForProduct(Entity product, List<Entity> nodes, GeneratorView generatorView, Entity context, String currentUserName) {
+        nodes.forEach(node -> customizeTechnologyForNode(node, product, generatorView, context, currentUserName));
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    private void customizeTechnologyForNode(Entity node, Entity product, GeneratorView generatorView, final Entity context) {
-        generateTechnologyNode(node, product, context);
+    private void customizeTechnologyForNode(Entity node, Entity product, GeneratorView generatorView, final Entity context, String currentUserName) {
+        generateTechnologyNode(node, product, context, currentUserName);
     }
 
-    private void generateTechnologyNode(Entity node, Entity product, Entity context) {
+    private void generateTechnologyNode(Entity node, Entity product, Entity context, String currentUserName) {
         try {
             Optional<Either<String, TechnologyId>> customizedTechId = Optional.ofNullable(product).flatMap(
                     mainProduct -> Optional.ofNullable(node.getId()).flatMap(
@@ -122,6 +125,7 @@ public class TechnologiesGeneratorForProductsService {
                 if (cti.isRight()) {
                     TechnologyId technologyId = cti.getRight();
                     technologyCustomizer.addCustomizedProductToQualityCard(technologyId);
+                    setUsernameForDraftTechnologyStateChange(currentUserName, technologyId);
                 }
             });
         } catch (Exception e) {
@@ -132,8 +136,17 @@ public class TechnologiesGeneratorForProductsService {
         }
     }
 
+    private void setUsernameForDraftTechnologyStateChange(String currentUserName, TechnologyId technologyId) {
+        DataDefinition technologyStateChangeDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY_STATE_CHANGE);
+        Entity technologyStateChange = technologyStateChangeDD.find().add(SearchRestrictions.belongsTo(TechnologyStateChangeFields.TECHNOLOGY, TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY, technologyId.get()))
+                .add(SearchRestrictions.eq(TechnologyStateChangeFields.TARGET_STATE, TechnologyStateStringValues.DRAFT)).uniqueResult();
+        technologyStateChange.setField(TechnologyStateChangeFields.WORKER, currentUserName);
+        technologyStateChangeDD.save(technologyStateChange);
+    }
+
     public Optional<Either<String, TechnologyId>> customize(final Long nodeId, final Entity mainProduct,
-            final GeneratorSettings settings, boolean generationMode) {
+                                                            final GeneratorSettings settings, boolean generationMode) {
         Optional<Entity> maybeNode = technologyStructureTreeDataProvider.tryFind(nodeId);
         if (!maybeNode.isPresent()) {
             return Optional.of(Either.left(String.format("Cannot find generator node with id = '%s'", nodeId)));
@@ -152,7 +165,7 @@ public class TechnologiesGeneratorForProductsService {
     }
 
     private Either<String, TechnologyId> customize(final Entity node, final Entity mainProduct, final GeneratorSettings settings,
-            boolean generationMode) {
+                                                   boolean generationMode) {
         Entity productTechnology = node.getBelongsToField(GeneratorTreeNodeFields.PRODUCT_TECHNOLOGY);
         if (productTechnology == null) {
             return Either.left("Cannot find technology for product");
@@ -164,7 +177,7 @@ public class TechnologiesGeneratorForProductsService {
     }
 
     private Either<String, TechnologyId> customize(final Entity node, final Entity mainProduct, final GeneratorSettings settings,
-            final Entity technology, boolean generationMode) {
+                                                   final Entity technology, boolean generationMode) {
         TechnologyId technologyId = new TechnologyId(technology.getId());
         if (settings.shouldCreateAndSwitchProducts()) {
             Entity newProduct = resolveProduct(node, mainProduct, settings);
@@ -193,7 +206,7 @@ public class TechnologiesGeneratorForProductsService {
     }
 
     private Either<String, TechnologyId> setupTechnologyNumberAndName(final GeneratorSettings settings,
-            final TechnologyId technologyId, final Entity product) {
+                                                                      final TechnologyId technologyId, final Entity product) {
         // I'm aware that loading & mapping the whole technology isn't cheap, but it will be far more easier to maintain if we
         // won't be depending on the operations' order. Trust me, avoiding issues with unwanted overriding some data by further
         // cascade saving is worth of it. Really.
@@ -204,7 +217,7 @@ public class TechnologiesGeneratorForProductsService {
     }
 
     private Either<String, TechnologyId> setupTechnologyNumberAndName(final GeneratorSettings settings, final Entity technology,
-            final Entity product) {
+                                                                      final Entity product) {
         technology.setField("generatorContext", settings.getGenerationContext());
         technology.setField(TechnologyFields.NUMBER, technologyNameAndNumberGenerator.generateNumber(product));
         technology.setField(TechnologyFields.NAME, technologyNameAndNumberGenerator.generateName(product));

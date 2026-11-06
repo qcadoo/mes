@@ -349,6 +349,8 @@
 					width="55"/>
             <option type="column" name="dateAndTime" fields="dateAndTime"
                     width="60"/>
+            <option type="column" name="worker" fields="worker"
+                    width="60"/>
             <option type="column" name="productionLineNumber" fields="productionLineNumber"
                     width="55"/>
             <option type="column" name="assortmentName" fields="assortmentName"
@@ -360,9 +362,9 @@
 
             <option type="order" column="number" direction="desc"/>
             <option type="searchable" value="name,number,description,productNumber,state,technologyGroupNumber,productGlobalTypeOfMaterial,
-                divisionName,master,standardPerformance,attachmentsExists,dateAndTime,productionLineNumber,assortmentName,isTemplateAccepted"/>
+                divisionName,master,standardPerformance,attachmentsExists,dateAndTime,productionLineNumber,assortmentName,isTemplateAccepted,worker"/>
             <option type="orderable" value="name,number,description,productNumber,state,technologyGroupNumber,productGlobalTypeOfMaterial,
-                divisionName,master,standardPerformance,attachmentsExists,dateAndTime,productionLineNumber,assortmentName,isTemplateAccepted"/>
+                divisionName,master,standardPerformance,attachmentsExists,dateAndTime,productionLineNumber,assortmentName,isTemplateAccepted,worker"/>
 
             <option type="correspondingView" value="technologies/technologyDetails"/>
             <option type="correspondingComponent" value="form"/>

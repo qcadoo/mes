@@ -25,6 +25,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -64,7 +65,8 @@ public class MasterOrderDocumentService {
         Entity user = dataDefinitionService.get(QcadooSecurityConstants.PLUGIN_IDENTIFIER, QcadooSecurityConstants.MODEL_USER)
                 .get(securityService.getCurrentUserId());
 
-        Entity masterOrderReleaseLocation = parameterService.getParameter().getBelongsToField(ParameterFieldsMO.MASTER_ORDER_RELEASE_LOCATION);
+        Entity parameter = parameterService.getParameter();
+        Entity masterOrderReleaseLocation = parameter.getBelongsToField(ParameterFieldsMO.MASTER_ORDER_RELEASE_LOCATION);
         if (masterOrderReleaseLocation.getBooleanField(LocationFieldsMFR.DRAFT_MAKES_RESERVATION)) {
             for (Entity masterOrderProduct : masterOrderProducts) {
                 Entity mo = masterOrderProduct.getDataDefinition().getMasterModelEntity(masterOrderProduct.getId());
@@ -85,6 +87,9 @@ public class MasterOrderDocumentService {
         documentBuilder.setField(DocumentFields.COMPANY, masterOrderFormEntity.getBelongsToField(MasterOrderFields.COMPANY));
         documentBuilder.setField(DocumentFields.ADDRESS, masterOrderFormEntity.getBelongsToField(MasterOrderFields.ADDRESS));
         documentBuilder.setField(DocumentFieldsMO.MASTER_ORDER, masterOrderFormEntity);
+        if (parameter.getBelongsToField(ParameterFieldsMFR.DOCUMENT_POSITION_PARAMETERS).getBooleanField(DocumentPositionParametersFields.SUGGEST_SHIPPING_DATE)) {
+            documentBuilder.setField(DocumentFields.SEND_DATE, new DateTime().withTimeAtStartOfDay().toDate());
+        }
 
         for (Entity masterOrderProduct : masterOrderProducts) {
             Entity mo = masterOrderProduct.getDataDefinition().getMasterModelEntity(masterOrderProduct.getId());
