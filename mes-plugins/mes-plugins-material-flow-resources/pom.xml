@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.qcadoo.mes</groupId>
         <artifactId>mes-plugins</artifactId>
-        <version>1.5-SNAPSHOT</version>
+        <version>1.5-SNAPSHOT-DEV</version>
     </parent>
 
     <artifactId>mes-plugins-material-flow-resources</artifactId>
@@ -19,19 +19,19 @@
         <dependency>
             <groupId>com.qcadoo.mes</groupId>
             <artifactId>mes-plugins-material-flow</artifactId>
-            <version>1.5-SNAPSHOT</version>
+            <version>1.5-SNAPSHOT-DEV</version>
         </dependency>
 
         <dependency>
             <groupId>com.qcadoo.mes</groupId>
             <artifactId>mes-plugins-cost-norms-for-product</artifactId>
-            <version>1.5-SNAPSHOT</version>
+            <version>1.5-SNAPSHOT-DEV</version>
         </dependency>
 
         <dependency>
             <groupId>com.qcadoo.mes</groupId>
             <artifactId>mes-plugins-advanced-genealogy</artifactId>
-            <version>1.5-SNAPSHOT</version>
+            <version>1.5-SNAPSHOT-DEV</version>
         </dependency>
         
     </dependencies>
