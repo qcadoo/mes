@@ -177,7 +177,7 @@ public class DocumentDetailsHooks {
             sendDateField.setEnabled(false);
             sendDateField.setFieldValue(null);
         }
-        if (DocumentType.RELEASE.getStringValue().equals(document.getStringField(DocumentFields.TYPE))
+        if (documentForm.getEntityId() == null && DocumentType.RELEASE.getStringValue().equals(document.getStringField(DocumentFields.TYPE))
                 && parameterService.getParameter().getBelongsToField(ParameterFieldsMFR.DOCUMENT_POSITION_PARAMETERS).getBooleanField(DocumentPositionParametersFields.SUGGEST_SHIPPING_DATE)
                 && Strings.isNullOrEmpty((String) sendDateField.getFieldValue())) {
             sendDateField.setFieldValue(setDateToField(new DateTime().withTimeAtStartOfDay().toDate()));
