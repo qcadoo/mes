@@ -120,6 +120,7 @@ public class OrderHooksBPC {
                             || !BigDecimalUtils.valueEquals(orderPlannedQuantity, pcqPlannedQuantity)) {
                         order.setField(OrderFields.PLANNED_QUANTITY, pcqPlannedQuantity);
                         order.setField(OrderFields.COMMISSIONED_PLANNED_QUANTITY, pcqPlannedQuantity);
+                        order.setField(OrderFields.REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE, pcqPlannedQuantity);
                     }
                 });
     }
