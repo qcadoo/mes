@@ -24,6 +24,7 @@
 package com.qcadoo.mes.basicProductionCounting.hooks;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields;
 import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
@@ -32,6 +33,7 @@ import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuanti
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
+import com.qcadoo.mes.orders.util.AdditionalUnitService;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
@@ -52,6 +54,9 @@ public class OrderHooksBPC {
 
     @Autowired
     private BasicProductionCountingService basicProductionCountingService;
+
+    @Autowired
+    private AdditionalUnitService additionalUnitService;
 
     public void onSave(final DataDefinition orderDD, final Entity order) {
         if (Objects.nonNull(order.getBelongsToField(OrderFields.TECHNOLOGY))) {
@@ -121,6 +126,9 @@ public class OrderHooksBPC {
                         order.setField(OrderFields.PLANNED_QUANTITY, pcqPlannedQuantity);
                         order.setField(OrderFields.COMMISSIONED_PLANNED_QUANTITY, pcqPlannedQuantity);
                         order.setField(OrderFields.REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE, pcqPlannedQuantity);
+                        BigDecimal quantityForAdditionalUnit = additionalUnitService.getQuantityAfterConversion(order, additionalUnitService.getAdditionalUnit(orderProduct),
+                                order.getDecimalField(OrderFields.PLANNED_QUANTITY), orderProduct.getStringField(ProductFields.UNIT));
+                        order.setField(OrderFields.PLANNED_QUANTITY_FOR_ADDITIONAL_UNIT, quantityForAdditionalUnit);
                     }
                 });
     }
@@ -128,11 +136,11 @@ public class OrderHooksBPC {
     private void addMessagesIfExists(Entity order, OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer) {
         operationProductComponentWithQuantityContainer.getMessages().forEach(message -> {
             if (MESSAGE_NOT_FIND_SPECIFIC_PRODUCT.equals(message.getMessage())) {
-                order.addGlobalMessage(message.getMessage(),false, false, message.getProductNumber(),message.getAttributeNumber());
+                order.addGlobalMessage(message.getMessage(), false, false, message.getProductNumber(), message.getAttributeNumber());
             } else if (MESSAGE_TO_MANY_PRODUCTS.equals(message.getMessage())) {
-                order.addGlobalMessage(message.getMessage(),false, false, message.getAttributeValue(), message.getAttributeNumber());
+                order.addGlobalMessage(message.getMessage(), false, false, message.getAttributeValue(), message.getAttributeNumber());
             } else if (MESSAGE_NOT_HAVE_ATTRIBUTE.equals(message.getMessage())) {
-                order.addGlobalMessage(message.getMessage(),false, false, message.getAttributeNumber());
+                order.addGlobalMessage(message.getMessage(), false, false, message.getAttributeNumber());
             }
         });
     }
