@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.qcadoo.mes</groupId>
 		<artifactId>mes-plugins</artifactId>
-		<version>1.5-SNAPSHOT</version>
+		<version>1.5-SNAPSHOT-DEV</version>
 	</parent>
 
 	<artifactId>mes-plugins-master-orders</artifactId>
@@ -14,23 +14,23 @@
 	<packaging>qcadoo-plugin</packaging>
 
 	<name>Qcadoo MES :: Plugins :: Sales orders</name>
-	<version>1.5-SNAPSHOT</version>
+	<version>1.5-SNAPSHOT-DEV</version>
 
 	<dependencies>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-orders</artifactId>
-			<version>1.5-SNAPSHOT</version>
+			<version>1.5-SNAPSHOT-DEV</version>
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-line-changeover-norms</artifactId>
-			<version>1.5-SNAPSHOT</version>
+			<version>1.5-SNAPSHOT-DEV</version>
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-deliveries</artifactId>
-			<version>1.5-SNAPSHOT</version>
+			<version>1.5-SNAPSHOT-DEV</version>
 		</dependency>
 	</dependencies>
 
