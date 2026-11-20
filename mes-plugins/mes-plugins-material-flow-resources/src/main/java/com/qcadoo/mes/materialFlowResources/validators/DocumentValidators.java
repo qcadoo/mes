@@ -24,6 +24,7 @@
 package com.qcadoo.mes.materialFlowResources.validators;
 
 import com.beust.jcommander.internal.Sets;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
@@ -35,6 +36,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.JoinType;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.view.api.ComponentState;
@@ -61,8 +63,10 @@ public class DocumentValidators {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    @Autowired
+    private ParameterService parameterService;
+
     public boolean validate(final DataDefinition documentDD, final Entity document) {
-        Long documentId = document.getId();
 
         boolean hasWarehouses = hasWarehouses(documentDD, document);
 
@@ -72,7 +76,41 @@ public class DocumentValidators {
 
         validateWarehouseChanged(documentDD, document);
 
+        validateUniqueName(documentDD, document);
+
         return document.isValid();
+    }
+
+    private boolean validateUniqueName(final DataDefinition documentDD, final Entity document) {
+        String name = document.getStringField(DocumentFields.NAME);
+
+        if (StringUtils.isBlank(name)) {
+            return true;
+        }
+
+        Entity documentPositionParameters = parameterService.getParameter()
+                .getBelongsToField(ParameterFieldsMFR.DOCUMENT_POSITION_PARAMETERS);
+
+        if (Objects.isNull(documentPositionParameters)
+                || !documentPositionParameters.getBooleanField(DocumentPositionParametersFields.UNIQUE_DOCUMENT_NAME)) {
+            return true;
+        }
+
+        SearchCriteriaBuilder searchCriteriaBuilder = documentDD.find()
+                .add(SearchRestrictions.eq(DocumentFields.NAME, name));
+
+        if (Objects.nonNull(document.getId())) {
+            searchCriteriaBuilder.add(SearchRestrictions.idNe(document.getId()));
+        }
+
+        if (searchCriteriaBuilder.setMaxResults(1).uniqueResult() != null) {
+            document.addError(documentDD.getField(DocumentFields.NAME),
+                    "materialFlowResources.document.error.nameNotUnique");
+
+            return false;
+        }
+
+        return true;
     }
 
     public boolean validatesWith(final DataDefinition documentDD, final Entity document) {

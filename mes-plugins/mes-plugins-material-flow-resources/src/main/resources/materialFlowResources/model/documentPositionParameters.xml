@@ -57,6 +57,7 @@
         <boolean name="stocktakingUseNominalCostPriceNotSpecified" default="false"/>
         <boolean name="suggestShippingDate" default="false"/>
         <boolean name="markHighStorageLocationsOnOrderPrintout" default="false"/>
+        <boolean name="uniqueDocumentName" default="false"/>
     </fields>
 
     <hooks/>
