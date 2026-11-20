@@ -24,10 +24,16 @@
 package com.qcadoo.mes.basicProductionCounting.hooks;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
+import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields;
 import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
+import com.qcadoo.mes.orders.util.AdditionalUnitService;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
@@ -49,6 +55,9 @@ public class OrderHooksBPC {
     @Autowired
     private BasicProductionCountingService basicProductionCountingService;
 
+    @Autowired
+    private AdditionalUnitService additionalUnitService;
+
     public void onSave(final DataDefinition orderDD, final Entity order) {
         if (Objects.nonNull(order.getBelongsToField(OrderFields.TECHNOLOGY))) {
             boolean shouldCreateProductionCounting = checkIfShouldCreateProductionCounting(order);
@@ -57,6 +66,7 @@ public class OrderHooksBPC {
                 OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer = basicProductionCountingService
                         .createProductionCounting(order);
                 addMessagesIfExists(order, operationProductComponentWithQuantityContainer);
+                setOrderPlannedQuantityFromProductionCountingQuantity(order);
             } else if (checkIfShouldReCreateProductionCounting(order)) {
                 order.setField(OrderFields.ADDITIONAL_FINAL_PRODUCTS, null);
                 for (Entity pcq : order.getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES)) {
@@ -75,6 +85,7 @@ public class OrderHooksBPC {
                 OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer = basicProductionCountingService
                         .createProductionCounting(order);
                 addMessagesIfExists(order, operationProductComponentWithQuantityContainer);
+                setOrderPlannedQuantityFromProductionCountingQuantity(order);
             } else {
 
                 updateProductionCountingQuantitiesAndOperationRuns(order);
@@ -89,14 +100,47 @@ public class OrderHooksBPC {
         }
     }
 
+    private void setOrderPlannedQuantityFromProductionCountingQuantity(final Entity order) {
+        Entity orderProduct = order.getBelongsToField(OrderFields.PRODUCT);
+
+        if (Objects.isNull(orderProduct)) {
+            return;
+        }
+
+        order.getHasManyField(OrderFieldsBPC.BASIC_PRODUCTION_COUNTINGS).stream()
+                .flatMap(bpc -> bpc.getHasManyField(BasicProductionCountingFields.PRODUCTION_COUNTING_QUANTITIES).stream())
+                .filter(pcq -> ProductionCountingQuantityRole.PRODUCED.getStringValue()
+                        .equals(pcq.getStringField(ProductionCountingQuantityFields.ROLE))
+                        && ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue()
+                        .equals(pcq.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))
+                        && Objects.nonNull(pcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCT))
+                        && orderProduct.getId().equals(pcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCT).getId()))
+                .map(pcq -> pcq.getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY))
+                .filter(Objects::nonNull)
+                .findFirst()
+                .ifPresent(pcqPlannedQuantity -> {
+                    BigDecimal orderPlannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
+
+                    if (Objects.isNull(orderPlannedQuantity)
+                            || !BigDecimalUtils.valueEquals(orderPlannedQuantity, pcqPlannedQuantity)) {
+                        order.setField(OrderFields.PLANNED_QUANTITY, pcqPlannedQuantity);
+                        order.setField(OrderFields.COMMISSIONED_PLANNED_QUANTITY, pcqPlannedQuantity);
+                        order.setField(OrderFields.REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE, pcqPlannedQuantity);
+                        BigDecimal quantityForAdditionalUnit = additionalUnitService.getQuantityAfterConversion(order, additionalUnitService.getAdditionalUnit(orderProduct),
+                                order.getDecimalField(OrderFields.PLANNED_QUANTITY), orderProduct.getStringField(ProductFields.UNIT));
+                        order.setField(OrderFields.PLANNED_QUANTITY_FOR_ADDITIONAL_UNIT, quantityForAdditionalUnit);
+                    }
+                });
+    }
+
     private void addMessagesIfExists(Entity order, OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer) {
         operationProductComponentWithQuantityContainer.getMessages().forEach(message -> {
             if (MESSAGE_NOT_FIND_SPECIFIC_PRODUCT.equals(message.getMessage())) {
-                order.addGlobalMessage(message.getMessage(),false, false, message.getProductNumber(),message.getAttributeNumber());
+                order.addGlobalMessage(message.getMessage(), false, false, message.getProductNumber(), message.getAttributeNumber());
             } else if (MESSAGE_TO_MANY_PRODUCTS.equals(message.getMessage())) {
-                order.addGlobalMessage(message.getMessage(),false, false, message.getAttributeValue(), message.getAttributeNumber());
+                order.addGlobalMessage(message.getMessage(), false, false, message.getAttributeValue(), message.getAttributeNumber());
             } else if (MESSAGE_NOT_HAVE_ATTRIBUTE.equals(message.getMessage())) {
-                order.addGlobalMessage(message.getMessage(),false, false, message.getAttributeNumber());
+                order.addGlobalMessage(message.getMessage(), false, false, message.getAttributeNumber());
             }
         });
     }
