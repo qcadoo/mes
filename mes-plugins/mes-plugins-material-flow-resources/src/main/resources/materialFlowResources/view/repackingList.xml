@@ -80,6 +80,15 @@
 									rejectBtn.disable();
 								} else {
 									var noDifferentStates = true;
+									var wms = false;
+
+									for (var i = 0; i < selectedEntitiesArray.length; i++) {
+										if (selectedEntitiesArray[i].fields.wms == true
+												&& selectedEntitiesArray[i].fields.stateInWMS != '03realized') {
+											wms = true;
+											break;
+										}
+									}
 
 	 								if(selectedEntitiesArray.length > 1){
 										for (var i = selectedEntitiesArray.length-1 ; i > 0 ; i--) {
@@ -109,6 +118,11 @@
                                         deleteBtn.disable();
                                         acceptBtn.disable();
                                         rejectBtn.disable();
+									}
+									if (wms) {
+										deleteBtn.disable();
+										acceptBtn.disable();
+										rejectBtn.disable();
 									}
 								}
 							}
