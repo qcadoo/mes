@@ -111,9 +111,9 @@
                         <option type="order" column="productNumber" direction="asc"/>
 
                         <option type="searchable"
-                                value="produced,typeOfMaterial,batchesQuantity,batches,productName,productNumber,locationNumber,availability,availableQuantity,requiredQuantity,replacement"/>
+                                value="produced,typeOfMaterial,batchesQuantity,batches,productName,productNumber,productUnit,locationNumber,availability,availableQuantity,requiredQuantity,replacement"/>
                         <option type="orderable"
-                                value="produced,typeOfMaterial,batchesQuantity,batches,productName,productNumber,availability,availableQuantity,requiredQuantity,replacement"/>
+                                value="produced,typeOfMaterial,batchesQuantity,batches,productName,productNumber,productUnit,locationNumber,availability,availableQuantity,requiredQuantity,replacement"/>
 
                         <option type="fullscreen" value="true"/>
                         <option type="multiselect" value="true"/>
