@@ -56,6 +56,7 @@
 <script src="/qcadooView/public/SlickGrid-2.4.14/plugins/slick.checkboxselectcolumn.js"></script>
 <script src="/qcadooView/public/SlickGrid-2.4.14/plugins/slick.rowselectionmodel.js"></script>
 <script src="/qcadooView/public/SlickGrid-2.4.14/controls/slick.pager.js"></script>
+<script src="/qcadooView/public/js/core/slickGridFilter-min.js"></script>
 <script src="/qcadooView/public/SlickGrid-2.4.14/controls/slick.columnpicker.js"></script>
 <script src="/qcadooView/public/SlickGrid-2.4.14/slick.grid.js"></script>
 <script src="/qcadooView/public/SlickGrid-2.4.14/slick.dataview.js"></script>

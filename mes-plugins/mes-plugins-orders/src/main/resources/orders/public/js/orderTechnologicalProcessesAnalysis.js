@@ -41,7 +41,7 @@ QCD.orderTechnologicalProcessesAnalysis = (function() {
                 let c = grid.getColumns()[grid.getColumnIndex(columnId)];
 
                 if (item[c.field] === undefined || item[c.field] === null ||
-                    item[c.field].toString().toUpperCase().indexOf(columnFilters[columnId].toUpperCase()) < 0) {
+                    !QCD.slickGridFilter.matches(columnFilters[columnId], item[c.field].toString())) {
 
                     return false;
                 }
