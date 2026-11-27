@@ -24,6 +24,9 @@
 package com.qcadoo.mes.materialFlowResources.service;
 
 import com.google.common.base.Strings;
+import com.qcadoo.mes.basic.CalculationQuantityService;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceCorrectionFields;
@@ -49,13 +52,16 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
     private NumberGeneratorService numberGeneratorService;
 
     @Autowired
-    private DictionaryService dictionaryService;
-
-    @Autowired
     private NumberService numberService;
 
     @Autowired
     private PalletValidatorService palletValidatorService;
+
+    @Autowired
+    private CalculationQuantityService calculationQuantityService;
+
+    @Autowired
+    private MaterialFlowResourcesService materialFlowResourcesService;
 
     @Override
     @Transactional
@@ -215,19 +221,13 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
         return oldEntity.getId().compareTo(newEntity.getId()) != 0;
     }
 
-    private BigDecimal calculateQuantityInAdditionalUnit(final Entity resource, final String unit) {
-        BigDecimal conversion = resource.getDecimalField(ResourceFields.CONVERSION);
-        BigDecimal quantity = resource.getDecimalField(ResourceFields.QUANTITY);
+    private BigDecimal calculateQuantityInAdditionalUnit(final Entity resource, final String additionalUnit) {
+        Entity product = resource.getBelongsToField(ResourceFields.PRODUCT);
+        String unit = product.getStringField(ProductFields.UNIT);
+        BigDecimal conversion = materialFlowResourcesService.getConversion(product, unit, additionalUnit, resource.getDecimalField(ResourceFields.CONVERSION));
 
-        boolean isInteger = dictionaryService.checkIfUnitIsInteger(unit);
-
-        BigDecimal value = quantity.multiply(conversion, numberService.getMathContext());
-
-        if (isInteger) {
-            return numberService.setScaleWithDefaultMathContext(value, 0);
-        } else {
-            return numberService.setScaleWithDefaultMathContext(value);
-        }
+        return calculationQuantityService.calculateAdditionalQuantity(
+                resource.getDecimalField(ResourceFields.QUANTITY), conversion, additionalUnit);
     }
 
     private DataDefinition getResourceDD() {

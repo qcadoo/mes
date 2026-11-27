@@ -116,33 +116,6 @@ public class ResourceDetailsHooks {
         }
     }
 
-    public void onConversionChange(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-                                   final String[] args) {
-        FieldComponent conversionField = (FieldComponent) viewDefinitionState.getComponentByReference(ResourceFields.CONVERSION);
-        FieldComponent quantityInAdditionalUnitField = (FieldComponent) viewDefinitionState
-                .getComponentByReference(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT);
-        FieldComponent additionalUnitField = (FieldComponent) viewDefinitionState
-                .getComponentByReference(ResourceFields.GIVEN_UNIT);
-
-        Either<Exception, Optional<BigDecimal>> maybeConversion = BigDecimalUtils
-                .tryParseAndIgnoreSeparator((String) conversionField.getFieldValue(), viewDefinitionState.getLocale());
-
-        if (maybeConversion.isRight() && maybeConversion.getRight().isPresent()) {
-            FormComponent resourceForm = (FormComponent) viewDefinitionState.getComponentByReference(QcadooViewConstants.L_FORM);
-
-            Entity resource = resourceForm.getPersistedEntityWithIncludedFormValues();
-
-            BigDecimal newAdditionalQuantity = calculationQuantityService.calculateAdditionalQuantity(
-                    resource.getDecimalField(ResourceFields.QUANTITY), maybeConversion.getRight().get(),
-                    (String) additionalUnitField.getFieldValue());
-
-            String quantityInAdditionalUnitFormatted = numberService.format(newAdditionalQuantity);
-
-            quantityInAdditionalUnitField.setFieldValue(quantityInAdditionalUnitFormatted);
-        }
-
-    }
-
     public void onQuantityChange(final ViewDefinitionState viewDefinitionState, final ComponentState state,
                                  final String[] args) {
         FieldComponent quantityField = (FieldComponent) viewDefinitionState.getComponentByReference(ResourceFields.QUANTITY);

@@ -129,7 +129,7 @@
                             <option type="alignment" value="right"/>
                             <listener event="onInputChange"
                                       class="com.qcadoo.mes.materialFlowResources.hooks.ResourceDetailsHooks"
-                                      method="onConversionChange"/>
+                                      method="onQuantityChange"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="8" width="5">
